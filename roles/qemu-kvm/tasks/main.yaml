@@ -1,0 +1,13 @@
+# Work with packages
+- name: Update repository index
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Installing packages
+  ansible.builtin.import_tasks: packages.yaml
+
+# Service management
+- name: Setup libvirt service
+  ansible.builtin.import_tasks: service.yaml

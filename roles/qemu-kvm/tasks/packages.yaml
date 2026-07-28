@@ -1,0 +1,22 @@
+- name: Installing QEMU KVM packages
+  ansible.builtin.package:
+    name: "{{ qemu_kvm_packages }}"
+    state: present
+
+- name: Installing libvirt packages
+  ansible.builtin.package:
+    name: "{{ libvirt_packages }}"
+    state: present
+
+- name: Install QEMU GUI packages
+  ansible.builtin.package:
+    name: "{{ qemu_kvm_gui_packages }}"
+    state: present
+  when: qemu_kvm_install_gui
+
+- name: Check KVM support
+  ansible.builtin.command:
+    cmd: kvm-ok
+  register: qemu_kvm_support
+  changed_when: false
+  failed_when: qemu_kvm_support.rc != 0

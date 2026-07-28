@@ -1,5 +1,5 @@
-- name: Setup isc-dhcp-server
+- name: Setup libvirt service
   ansible.builtin.systemd:
-    name: isc-dhcp-server
+    name: libvirtd
     enabled: true
     state: started

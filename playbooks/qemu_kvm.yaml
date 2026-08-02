@@ -1,0 +1,8 @@
+
+- name: Configure QEMU KVM host
+  hosts: qemu_kvm_serverы
+  become: true
+  gather_facts: true
+
+  roles:
+    - qemu_kvm

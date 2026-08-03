@@ -1,0 +1,4 @@
+- name: Restart tftp
+  ansible.builtin.systemd:
+    name: tftp
+    state: restarted

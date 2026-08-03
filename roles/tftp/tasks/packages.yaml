@@ -1,0 +1,5 @@
+- name: Installing tftp
+  ansible.builtin.package:
+    name: "{{ tftp_packages }}"
+    state: present
+  notify: Restart tftp

@@ -1,0 +1,18 @@
+# We need the preexecution environment binaries for our TFTP server, to send to the clients.
+- name: Install prexec packages
+  ansible.builtin.get_url:
+    url: "https://www.zytor.com/pub/syslinux/Testing/6.04/syslinux-6.04-pre2.tar.gz"
+    dest: /tmp/syslinux-6.04-pre2.tar.gz
+
+# What if the url is unreachable? We need to install the prexec packages from the local repo.
+
+- name: Install build tools
+  ansible.builtin.package:
+    name: "{{ prexec_packages }}"
+    state: present
+
+- name: Extract syslinux
+  ansible.builtin.unarchive:
+    src: /tmp/syslinux-6.04-pre2.tar.gz
+    dest: /opt/syslinux/
+    remote_src: true

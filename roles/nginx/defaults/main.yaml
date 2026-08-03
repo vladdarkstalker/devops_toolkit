@@ -1,2 +1,2 @@
-packages:
+nginx_packages:
   - nginx

@@ -2,4 +2,3 @@
   ansible.builtin.systemd:
     name: isc-dhcp-server
     state: restarted
-  when: ansible_os_family == "Debian"

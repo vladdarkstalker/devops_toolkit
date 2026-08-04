@@ -3,5 +3,10 @@
     update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
-  
+
+- name: Installing packages
+  ansible.builtin.import_tasks: packages.yaml
+
+- name: Configure service
+  ansible.builtin.import_tasks: service.yaml
   

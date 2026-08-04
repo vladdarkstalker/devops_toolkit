@@ -1,0 +1,59 @@
+- name: Create main directories
+  ansible.builtin.file:
+    path: "{{ tftp_root }}/{{ item }}"
+    state: directory
+  loop: "{{ tftp_subdirs }}"
+
+- name: Copy specific BIOS boot files
+  ansible.builtin.copy:
+    src: "{{ syslinux_build_dir }}/{{ item }}"
+    dest: "{{ tftp_root }}/BIOS/"
+    remote_src: true
+  loop: "{{ bios_specific_files }}"
+
+- name: Find BIOS .c32 modules
+  ansible.builtin.find:
+    paths: "{{ syslinux_build_dir }}/bios"
+    patterns: "*.c32"
+    recurse: true
+    file_type: file
+  register: bios_c32_modules
+
+- name: Copy BIOS .c32 modules to isolinux
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ tftp_root }}/BIOS/isolinux/{{ item.path | basename }}"
+    remote_src: true
+    owner: root
+    group: root
+    mode: 'u=rw,go=r'
+  loop: "{{ bios_c32_modules.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+
+- name: Copy specific UEFI boot files
+  ansible.builtin.copy:
+    src: "{{ syslinux_build_dir }}/{{ item }}"
+    dest: "{{ tftp_root }}/EFIx64/"
+    remote_src: true
+  loop: "{{ uefi_specific_files }}"
+
+- name: Find UEFI .c32 modules
+  ansible.builtin.find:
+    paths: "{{ syslinux_build_dir }}/efi64"
+    patterns: "*.c32"
+    recurse: true
+    file_type: file
+  register: uefi_c32_modules
+
+- name: Copy UEFI .c32 modules to isolinux
+  ansible.builtin.copy:
+    src: "{{ item.path }}"
+    dest: "{{ tftp_root }}/EFIx64/isolinux/{{ item.path | basename }}"
+    remote_src: true
+    owner: root
+    group: root
+    mode: 'u=rw,go=r'
+  loop: "{{ uefi_c32_modules.files }}"
+  loop_control:
+    label: "{{ item.path }}"

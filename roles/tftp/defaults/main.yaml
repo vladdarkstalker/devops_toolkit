@@ -1,2 +1,25 @@
 tftp_packages:
   - tftpd-hpa
+
+tftp_root: /var/lib/tftpboot
+
+syslinux_build_dir: /opt/syslinux/syslinux-6.04-pre2
+
+tftp_subdirs:
+  - BIOS
+  - BIOS/pxelinux.cfg
+  - BIOS/isolinux
+  - EFIx64
+  - EFIx64/pxelinux.cfg
+  - EFIx64/isolinux
+
+bios_specific_files:
+  - bios/com32/libutil/libutil.c32
+  - bios/com32/elflink/ldlinux/ldlinux.c32
+  - bios/core/pxelinux.0
+
+uefi_specific_files:
+  - efi64/com32/elflink/ldlinux/ldlinux.e64
+  - efi64/com32/lib/libcom32.c32
+  - efi64/com32/libutil/libutil.c32
+  - efi64/efi/syslinux.efi

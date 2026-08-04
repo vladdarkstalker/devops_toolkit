@@ -1,18 +1,50 @@
-# We need the preexecution environment binaries for our TFTP server, to send to the clients.
-- name: Install prexec packages
-  ansible.builtin.get_url:
-    url: "https://www.zytor.com/pub/syslinux/Testing/6.04/syslinux-6.04-pre2.tar.gz"
-    dest: /tmp/syslinux-6.04-pre2.tar.gz
-
-# What if the url is unreachable? We need to install the prexec packages from the local repo.
-
 - name: Install build tools
   ansible.builtin.package:
     name: "{{ prexec_packages }}"
     state: present
 
-- name: Extract syslinux
+- name: Work with syslinux
+  block:
+    - name: Install syslinux
+      ansible.builtin.get_url:
+        url: "https://www.zytor.com/pub/syslinux/Testing/6.04/syslinux-6.04-pre2.tar.gz"
+        dest: /tmp/syslinux-6.04-pre2.tar.gz
+  rescue:
+    - name: Extract syslinux
+      ansible.builtin.copy:
+        src: /tmp/syslinux-6.04-pre2.tar.gz
+        dest: /tmp/
+        remote_src: true
+
+- name: Ensure Syslinux build directory exists
+  ansible.builtin.file:
+    path: /opt/syslinux
+    state: directory
+    owner: root
+    group: root
+    mode: 'u=rwx,g=rx,o=rx'
+
+- name: Extract Syslinux files
   ansible.builtin.unarchive:
     src: /tmp/syslinux-6.04-pre2.tar.gz
-    dest: /opt/syslinux/
+    dest: /opt/syslinux
     remote_src: true
+  register: syslinux_extraction
+
+- name: Clean previous Syslinux build
+  ansible.builtin.command:
+    cmd: make spotless
+    chdir: /opt/syslinux/syslinux-6.04-pre2
+  when: syslinux_extraction.changed
+
+- name: Clean previous builds (make spotless)
+  ansible.builtin.command:
+    cmd: make spotless
+    chdir: /opt/syslinux/syslinux-6.04-pre2
+    creates: /opt/syslinux/syslinux-6.04-pre2/bios/core/ldlinux.bin
+
+- name: Compile the code (make)
+  ansible.builtin.command:
+    cmd: make
+    chdir: /opt/syslinux/syslinux-6.04-pre2
+    creates: /opt/syslinux/syslinux-6.04-pre2/bios/core/ldlinux.bin

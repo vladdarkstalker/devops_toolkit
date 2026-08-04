@@ -1,6 +1,4 @@
 prexec_packages:
-  - apt-get
-  - install
   - nasm
   - uuid-dev
   - g++-multilib

@@ -1,0 +1,39 @@
+---
+# Shared PXE topology variables.
+# Edit this file before deployment when addresses, network or domain differ.
+
+# PXE content server hosting DHCP, TFTP, HTTP and installation images.
+pxe_server_address: 192.168.0.24
+
+# Client network parameters used by the DHCP role.
+dhcp_subnet: 192.168.0.0
+dhcp_netmask: 255.255.0.0
+dhcp_range_start: 192.168.0.100
+dhcp_range_end: 192.168.0.200
+dhcp_broadcast_address: 192.168.0.255
+dhcp_gateway: 192.168.0.1
+# PXE host also provides DNS in the default single-server topology.
+dhcp_dns_servers:
+  - "{{ pxe_server_address }}"
+# dhcp_dns_servers:
+#   - 192.168.0.24 #pxe01 primary
+#   - 192.168.0.25 #pxe02 secondary
+dhcp_tftp_server: "{{ pxe_server_address }}"
+
+# The interface must be overridden if DHCP should not listen on all IPv4 NICs.
+dhcp_interfacesv4:
+  - enp1s0
+
+# Address embedded into generated PXELINUX installation URLs.
+pxe_http_server: "{{ pxe_server_address }}"
+
+# Internal DNS zone parameters for the 192.168.0.0/24 network.
+domain: dark.side.com
+dns_secondary_enabled: false
+dns_trusted_networks:
+  - 192.168.0.0/24
+dns_reverse_zone: 0.168.192.in-addr.arpa
+dns_reverse_network: 192.168.0
+dns_zone_records:
+  - name: pxe
+    address: "{{ pxe_server_address }}"

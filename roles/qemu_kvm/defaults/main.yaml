@@ -1,3 +1,6 @@
+---
+# Default packages and feature switches for the QEMU/KVM host role.
+
 qemu_kvm_packages:
   - qemu-system-x86
   - qemu-utils

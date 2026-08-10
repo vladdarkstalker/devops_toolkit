@@ -1,4 +1,0 @@
-prexec_packages:
-  - nasm
-  - uuid-dev
-  - g++-multilib

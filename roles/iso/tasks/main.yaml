@@ -1,0 +1,11 @@
+---
+# ISO role entry point: process every declared operating-system image in order.
+
+# Include the publication workflow for public defaults and optional local
+# entries supplied through iso_extra_images.
+- name: Prepare installation images
+  ansible.builtin.include_tasks: image.yaml
+  loop: "{{ iso_images + iso_extra_images }}"
+  loop_control:
+    loop_var: iso_image
+    label: "{{ iso_image.title }}"

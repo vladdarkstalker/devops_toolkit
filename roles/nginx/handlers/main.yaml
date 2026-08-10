@@ -1,3 +1,7 @@
+---
+# Handlers for applying validated Nginx virtual-host changes.
+
+# Restart Nginx only when one of its managed configuration files changes.
 - name: Restart nginx
   ansible.builtin.systemd:
     name: nginx

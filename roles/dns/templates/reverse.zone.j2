@@ -1,0 +1,21 @@
+; Managed by Ansible: reverse zone mapping IPv4 host octets to FQDNs.
+$TTL {{ dns_zone_negative_ttl }}
+@ IN SOA {{ dns_primary_host }}.{{ domain }}. admin.{{ domain }}. (
+    {{ dns_zone_serial }}
+    {{ dns_zone_refresh }}
+    {{ dns_zone_retry }}
+    {{ dns_zone_expire }}
+    {{ dns_zone_negative_ttl }} )
+
+@ IN NS {{ dns_primary_host }}.{{ domain }}.
+{% if dns_secondary_enabled %}
+@ IN NS {{ dns_secondary_host }}.{{ domain }}.
+{% endif %}
+
+{{ hostvars[dns_primary_host].ansible_host.split('.')[-1] }} IN PTR {{ dns_primary_host }}.{{ domain }}.
+{% if dns_secondary_enabled %}
+{{ hostvars[dns_secondary_host].ansible_host.split('.')[-1] }} IN PTR {{ dns_secondary_host }}.{{ domain }}.
+{% endif %}
+{% for record in dns_zone_records %}
+{{ record.address.split('.')[-1] }} IN PTR {{ record.name }}.{{ domain }}.
+{% endfor %}

@@ -1,21 +1,25 @@
-# Work with packages
+---
+# DHCP role entry point: install, back up, configure and start the service.
+
+# Refresh APT metadata once per hour on supported Debian-family hosts.
 - name: Update repository index
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
 
+# Install isc-dhcp-server before accessing its generated configuration paths.
 - name: Installing packages
   ansible.builtin.import_tasks: packages.yaml
 
-# Backup
+# Preserve the existing DHCP configuration before replacing it.
 - name: Backup files
   ansible.builtin.import_tasks: backup.yaml
 
-# Configuration
+# Render and validate both dhcpd.conf and the service interface selection.
 - name: Configure DHCP
   ansible.builtin.import_tasks: configuration.yaml
 
-# Service
+# Enable DHCP at boot and ensure the daemon is running now.
 - name: Setup services
   ansible.builtin.import_tasks: service.yaml

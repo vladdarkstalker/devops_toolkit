@@ -1,6 +1,72 @@
-- name: Update repository index  
+---
+# DNS role entry point for single-node or primary/secondary BIND deployment.
+
+# Require one DNS host in standalone mode or two when secondary is enabled.
+- name: Validate DNS inventory
+  ansible.builtin.assert:
+    that:
+      - dns_group_name in groups
+      - >-
+        (groups[dns_group_name] | default([]) | length)
+        >= (2 if dns_secondary_enabled else 1)
+      - inventory_hostname in (groups[dns_group_name] | default([]))
+    fail_msg: >-
+      The role requires {{ 2 if dns_secondary_enabled else 1 }} host(s) in the
+      {{ dns_group_name }} group.
+
+# Always treat the first dns_servers member as the authoritative primary.
+- name: Set primary DNS server fact
+  ansible.builtin.set_fact:
+    dns_primary_host: "{{ groups[dns_group_name][0] }}"
+
+# Define the second member only when redundant DNS operation is requested.
+- name: Set secondary DNS server fact
+  ansible.builtin.set_fact:
+    dns_secondary_host: "{{ groups[dns_group_name][1] }}"
+  when: dns_secondary_enabled
+
+# Refresh APT metadata once per hour on Debian-family systems.
+- name: Update repository index
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == "Debian"
-  
+
+# Install the BIND daemon and its validation utilities.
+- name: Install BIND packages
+  ansible.builtin.import_tasks: packages.yaml
+
+# Preserve the current configuration before managed templates replace it.
+- name: Back up BIND configuration
+  ansible.builtin.import_tasks: backup.yaml
+
+# Select IPv4, IPv6 or dual-stack daemon startup arguments.
+- name: Configure BIND address family
+  ansible.builtin.import_tasks: dualstack.yaml
+
+# Configure trusted recursion, listeners and upstream forwarders on both nodes.
+- name: Configure common BIND options
+  ansible.builtin.import_tasks: options.yaml
+
+# Create authoritative zone declarations and files only on the primary node.
+- name: Configure the primary DNS server
+  ansible.builtin.import_tasks: primary_dns.yaml
+  when: inventory_hostname == dns_primary_host
+
+# Configure zone transfers from the primary only on the secondary node.
+- name: Configure the secondary DNS server
+  ansible.builtin.import_tasks: secondary_dns.yaml
+  when:
+    - dns_secondary_enabled
+    - inventory_hostname == (dns_secondary_host | default(''))
+
+# Run notified restarts after both server configurations have been validated.
+- name: Apply BIND configuration changes
+  ansible.builtin.meta: flush_handlers
+
+# Enable BIND at boot and ensure it remains active after handler execution.
+- name: Enable and start BIND
+  ansible.builtin.service:
+    name: bind9
+    enabled: true
+    state: started

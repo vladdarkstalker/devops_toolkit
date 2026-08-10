@@ -1,2 +1,11 @@
+---
+# Default variables for the PXE HTTP content server.
+
+# Nginx runtime packages.
 nginx_packages:
   - nginx
+
+# HTTP document root and virtual-host listener settings.
+nginx_pxe_root: /var/www/html
+nginx_pxe_server_name: _
+nginx_pxe_listen_port: 80

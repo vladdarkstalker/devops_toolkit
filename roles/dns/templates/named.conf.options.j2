@@ -1,0 +1,28 @@
+// Managed by Ansible: recursion ACLs, listeners and upstream DNS forwarders.
+acl "trusted" {
+{% for network in dns_trusted_networks %}
+    {{ network }};
+{% endfor %}
+};
+
+options {
+    directory "/var/cache/bind";
+
+    recursion yes;
+    allow-recursion { trusted; };
+    listen-on { {{ ansible_host | default(ansible_default_ipv4.address) }}; };
+{% if dualstack == "ipv6" or dualstack == "dual" %}
+    listen-on-v6 { any; };
+{% else %}
+    listen-on-v6 { none; };
+{% endif %}
+    allow-transfer { none; };
+
+    forwarders {
+{% for forwarder in dns_forwarders %}
+        {{ forwarder }};
+{% endfor %}
+    };
+
+    dnssec-validation auto;
+};

@@ -1,0 +1,13 @@
+---
+# Zone-transfer configuration executed only on the secondary DNS node.
+
+# Declare both zones as secondary and point them at the primary server.
+- name: Configure secondary forward and reverse zones
+  ansible.builtin.template:
+    src: named.conf.secondary.j2
+    dest: "{{ localfile }}"
+    owner: root
+    group: bind
+    mode: u=rw,g=r,o=r
+    validate: named-checkconf %s
+  notify: Restart bind9

@@ -1,0 +1,149 @@
+---
+# Publication workflow for one installation image selected by the outer loop.
+
+# Detect a completed image so repeated playbook runs do not upload it again.
+- name: Check publication marker for {{ iso_image.title }}
+  ansible.builtin.stat:
+    path: "{{ iso_http_root }}/{{ iso_image.name }}/.pxe-published"
+  register: iso_publication_marker
+
+# Decide whether this image needs publication during the current run.
+- name: Determine publication requirement for {{ iso_image.title }}
+  ansible.builtin.set_fact:
+    iso_should_publish: >-
+      {{ iso_force_republish or not iso_publication_marker.stat.exists }}
+
+# Create staging, temporary mount and HTTP publication directories.
+- name: Create directories for {{ iso_image.title }}
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o=rx"
+  loop:
+    - "{{ iso_staging_root }}"
+    - "{{ iso_mount_root }}/{{ iso_image.name }}"
+    - "{{ iso_http_root }}/{{ iso_image.name }}"
+  when: iso_should_publish
+
+# Create per-image kernel/initrd directories for each supported firmware mode.
+- name: Create TFTP directories for {{ iso_image.title }}
+  ansible.builtin.file:
+    path: "{{ iso_tftp_root }}/{{ item }}/{{ iso_image.name }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o=rx"
+  loop: "{{ iso_boot_modes }}"
+  when: iso_should_publish
+
+# Transfer the source ISO from roles/iso/files to the server staging directory.
+- name: Copy {{ iso_image.title }} image to the managed host
+  ansible.builtin.copy:
+    src: "{{ iso_image.source }}"
+    dest: "{{ iso_staging_root }}/{{ iso_image.source | basename }}"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+  when: iso_should_publish
+
+# Detect an existing mount so the role does not unmount resources it did not own.
+- name: Check whether the {{ iso_image.title }} image is mounted
+  ansible.builtin.command:
+    argv:
+      - mountpoint
+      - --quiet
+      - "{{ iso_mount_root }}/{{ iso_image.name }}"
+  register: iso_mountpoint_check
+  changed_when: false
+  # mountpoint returns 0 for a mount point and commonly 32 for a plain directory.
+  failed_when: false
+  when: iso_should_publish
+
+# Mount, extract and publish all boot and installation assets as one workflow.
+- name: Publish {{ iso_image.title }} for PXE boot
+  when: iso_should_publish
+  block:
+    # Mount the staged ISO read-only when it is not already mounted.
+    - name: Mount {{ iso_image.title }} image
+      ansible.builtin.command:
+        argv:
+          - mount
+          - --options
+          - loop,ro
+          - "{{ iso_staging_root }}/{{ iso_image.source | basename }}"
+          - "{{ iso_mount_root }}/{{ iso_image.name }}"
+      register: iso_mount
+      when: iso_mountpoint_check.rc != 0
+      changed_when: true
+
+    # Copy kernel and initrd into both BIOS and UEFI TFTP directories.
+    - name: Copy {{ iso_image.title }} kernel and initrd to TFTP roots
+      ansible.builtin.copy:
+        src: "{{ iso_mount_root }}/{{ iso_image.name }}/{{ item.1.source }}"
+        dest: "{{ iso_tftp_root }}/{{ item.0 }}/{{ iso_image.name }}/{{ item.1.dest }}"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "u=rw,g=r,o=r"
+      loop: "{{ iso_boot_modes | product(iso_boot_files) | list }}"
+      vars:
+        iso_boot_files:
+          - source: "{{ iso_image.kernel }}"
+            dest: vmlinuz
+          - source: "{{ iso_image.initrd }}"
+            dest: initrd
+      loop_control:
+        label: "{{ item.0 }}/{{ iso_image.name }}/{{ item.1.dest }}"
+
+    # Publish the complete mounted tree for installers that use an HTTP repo.
+    - name: Copy {{ iso_image.title }} installation files to the HTTP root
+      ansible.builtin.copy:
+        src: "{{ iso_mount_root }}/{{ iso_image.name }}/"
+        dest: "{{ iso_http_root }}/{{ iso_image.name }}/"
+        remote_src: true
+        directory_mode: "u=rwx,g=rx,o=rx"
+        mode: preserve
+
+    # Optionally publish the original ISO for casper's url= boot parameter.
+    - name: Publish {{ iso_image.title }} ISO over HTTP
+      ansible.builtin.copy:
+        src: "{{ iso_staging_root }}/{{ iso_image.source | basename }}"
+        dest: "{{ iso_http_root }}/{{ iso_image.name }}/installer.iso"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "u=rw,g=r,o=r"
+      when: iso_image.publish_iso | default(false)
+
+  always:
+    # Unmount only images mounted by this task invocation, including on failures.
+    - name: Unmount {{ iso_image.title }} image mounted by this role
+      ansible.builtin.command:
+        argv:
+          - umount
+          - "{{ iso_mount_root }}/{{ iso_image.name }}"
+      when:
+        - iso_mount is defined
+        - iso_mount is changed
+      changed_when: true
+
+# Release tmpfs/disk space after all requested assets have been published.
+- name: Remove staged image for {{ iso_image.title }}
+  ansible.builtin.file:
+    path: "{{ iso_staging_root }}/{{ iso_image.source | basename }}"
+    state: absent
+  when: iso_should_publish
+
+# Mark a fully published and cleaned image so later runs can skip its transfer.
+- name: Create publication marker for {{ iso_image.title }}
+  ansible.builtin.copy:
+    content: |
+      Managed by Ansible.
+      Source: {{ iso_image.source }}
+    dest: "{{ iso_http_root }}/{{ iso_image.name }}/.pxe-published"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+  when: iso_should_publish

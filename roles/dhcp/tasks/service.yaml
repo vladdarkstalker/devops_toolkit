@@ -1,3 +1,7 @@
+---
+# Service-management tasks for isc-dhcp-server.
+
+# Enable the DHCP daemon for future boots and start it for the current session.
 - name: Setup isc-dhcp-server
   ansible.builtin.systemd:
     name: isc-dhcp-server

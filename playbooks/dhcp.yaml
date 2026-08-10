@@ -1,9 +1,13 @@
-# ansible-playbook -i inventory.ini playbooks/dhcp.yaml
-
 ---
-- name: Configure DHCP Server
+# Standalone playbook for the PXE-aware DHCP service.
+- name: Configure DHCP server
   hosts: dhcp_servers
   become: true
   gather_facts: true
+
+  # Shared topology can be edited once for both standalone and full PXE runs.
+  vars_files:
+    - vars/pxe.yaml
+
   roles:
-    - dhcp
+    - role: ../roles/dhcp

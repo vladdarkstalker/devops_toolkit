@@ -1,0 +1,40 @@
+---
+# Default installation-image catalogue and publication paths for PXE.
+
+# TFTP, HTTP, mount and staging locations on the PXE content server.
+iso_tftp_root: /var/lib/tftpboot
+iso_http_root: /var/www/html
+iso_mount_root: /mnt/pxe
+iso_staging_root: /tmp/pxe-images
+
+# Reprocess images even when their HTTP publication marker already exists.
+iso_force_republish: false
+
+# Site-specific or non-public images can be supplied from an ignored vars file
+# without adding their metadata to the role's shared defaults.
+iso_extra_images: []
+
+# Boot modes receiving a copy of each kernel and initrd.
+iso_boot_modes:
+  - BIOS
+  - EFIx64
+
+# Installation images. Add another mapping to publish another operating system.
+iso_images:
+  - name: centos
+    title: CentOS 7.6
+    source: centos/CentOS-7-x86_64-DVD-1810.iso
+    kernel: images/pxeboot/vmlinuz
+    initrd: images/pxeboot/initrd.img
+  - name: ubuntu_server
+    title: Ubuntu Server 26.04
+    source: ubuntu_server/ubuntu-26.04-live-server-amd64.iso
+    kernel: casper/vmlinuz
+    initrd: casper/initrd
+    publish_iso: true
+  - name: ubuntu_desktop
+    title: Ubuntu Desktop 24.04.3
+    source: ubuntu_desktop/ubuntu-24.04.3-desktop-amd64.iso
+    kernel: casper/vmlinuz
+    initrd: casper/initrd
+    publish_iso: true

@@ -1,3 +1,7 @@
+---
+# Backup tasks executed before DHCP configuration is changed.
+
+# Create a persistent root-owned location for timestamped configuration copies.
 - name: Is backup dir exist
   ansible.builtin.file:
     path: "{{ dhcp_backup_path }}"
@@ -11,7 +15,7 @@
 #   loop: "{{ dhcp_backup_files }}"
 #   register: dhcp_backup_files_stat
 
-# If we need copy dirs
+# Inspect each configured source directory without failing when it is absent.
 - name: Is backup dirs exist
   ansible.builtin.stat:
     path: "{{ item }}"
@@ -30,7 +34,7 @@
 #     - item.stat.exists
 #     - item.stat.isreg
 
-# Copy dirs to backup dir
+# Copy every existing DHCP directory to a timestamped backup destination.
 - name: Copy dirs to backup dir
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"

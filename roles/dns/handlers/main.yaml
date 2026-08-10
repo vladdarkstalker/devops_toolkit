@@ -1,3 +1,7 @@
+---
+# Handlers for applying validated BIND configuration and zone changes.
+
+# Restart BIND only when a managed file or daemon option has changed.
 - name: Restart bind9
   ansible.builtin.service:
     name: bind9

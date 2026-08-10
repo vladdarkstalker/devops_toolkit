@@ -1,29 +1,42 @@
-# Is named file exist
+---
+# Configure the address family passed to the BIND named daemon.
+
+# Detect the distribution-provided defaults file before attempting to edit it.
 - name: Is named file exist
   ansible.builtin.stat:
     path: /etc/default/named
   register: named_stat
 
-# Turn ON IPv4 + IPv6
+# Remove family restrictions when dual-stack operation is requested.
 - name: Turn ON IPv4 + IPv6
   ansible.builtin.lineinfile:
     path: /etc/default/named
     regexp: '^OPTIONS='
     line: 'OPTIONS="-u bind"'
   notify: Restart bind9
+  when: named_stat.stat.exists and dualstack == "dual"
 
-# Turn ON IPv4 only
+# Add -4 when the private DNS network uses IPv4 only.
 - name: Turn ON IPv4
   ansible.builtin.lineinfile:
     path: /etc/default/named
     regexp: '^OPTIONS='
     line: 'OPTIONS="-u bind -4"'
   notify: Restart bind9
+  when: named_stat.stat.exists and dualstack == "ipv4"
 
-# Turn ON IPv6 only
+# Add -6 when the DNS service must listen exclusively on IPv6.
 - name: Turn ON IPv6
   ansible.builtin.lineinfile:
     path: /etc/default/named
     regexp: '^OPTIONS='
     line: 'OPTIONS="-u bind -6"'
   notify: Restart bind9
+  when: named_stat.stat.exists and dualstack == "ipv6"
+
+# Reject spelling mistakes instead of silently leaving daemon flags unchanged.
+- name: Validate requested address family
+  ansible.builtin.assert:
+    that:
+      - dualstack in ["dual", "ipv4", "ipv6"]
+    fail_msg: 'dualstack must be one of: dual, ipv4, ipv6'

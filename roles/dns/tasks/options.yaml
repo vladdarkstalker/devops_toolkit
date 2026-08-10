@@ -1,0 +1,13 @@
+---
+# Common BIND options shared by primary and secondary DNS servers.
+
+# Render ACLs, listeners and forwarders, validating syntax before replacement.
+- name: Configure BIND options
+  ansible.builtin.template:
+    src: named.conf.options.j2
+    dest: "{{ optionsfile }}"
+    owner: root
+    group: bind
+    mode: u=rw,g=r,o=r
+    validate: named-checkconf %s
+  notify: Restart bind9

@@ -1,8 +1,45 @@
-- name: Deploy dhcpd.conf
-  ansible.builtin.copy:
-    src: dhcpd.conf
-    dest: /etc/dhcp/dhcpd.conf
+---
+# Configuration rendering and validation tasks for isc-dhcp-server.
+
+# Render the candidate under /etc/dhcp because AppArmor may deny dhcpd access
+# to Ansible's default remote temporary directory under the SSH user's home.
+- name: Render candidate dhcpd.conf
+  ansible.builtin.template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf.ansible
     owner: "{{ dhcp_user }}"
     group: "{{ dhcp_group }}"
+    mode: u=rw,g=r,o=r
+
+# Validate the candidate before it is allowed to replace the active service
+# configuration, leaving the last working dhcpd.conf intact on syntax errors.
+- name: Validate candidate dhcpd.conf
+  ansible.builtin.command:
+    argv:
+      - dhcpd
+      - -t
+      - -cf
+      - /etc/dhcp/dhcpd.conf.ansible
+  changed_when: false
+
+# Promote only a successfully validated candidate. The copy module compares
+# content, so the DHCP service restarts only when the active file really changes.
+- name: Deploy validated dhcpd.conf
+  ansible.builtin.copy:
+    src: /etc/dhcp/dhcpd.conf.ansible
+    dest: /etc/dhcp/dhcpd.conf
+    remote_src: true
+    owner: "{{ dhcp_user }}"
+    group: "{{ dhcp_group }}"
+    mode: u=rw,g=r,o=r
+  notify: Restart isc-dhcp-server
+
+# Select the IPv4 interfaces on which the systemd service should listen.
+- name: Configure DHCP server interfaces
+  ansible.builtin.template:
+    src: isc-dhcp-server.j2
+    dest: /etc/default/isc-dhcp-server
+    owner: root
+    group: root
     mode: u=rw,g=r,o=r
   notify: Restart isc-dhcp-server

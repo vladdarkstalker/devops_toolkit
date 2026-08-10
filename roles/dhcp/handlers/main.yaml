@@ -1,3 +1,7 @@
+---
+# Handlers for applying validated DHCP configuration changes.
+
+# Restart DHCP only when a configuration or interface template has changed.
 - name: Restart isc-dhcp-server
   ansible.builtin.systemd:
     name: isc-dhcp-server

@@ -1,8 +1,9 @@
-
+---
+# Standalone playbook for the QEMU/KVM role; unrelated to PXE orchestration.
 - name: Configure QEMU KVM host
-  hosts: qemu_kvm_serverы
+  hosts: qemu_kvm_servers
   become: true
   gather_facts: true
 
   roles:
-    - qemu_kvm
+    - role: ../roles/qemu_kvm

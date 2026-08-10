@@ -1,13 +1,50 @@
+---
+# Default variables for an internal single-node or primary/secondary BIND deployment.
+# Network-specific values are overridden from playbooks/vars/pxe.yaml.
+
+# BIND packages and trusted client networks.
 dns_packages:
   - bind9
   - bind9utils
   - bind9-doc
 
 dns_trusted_networks:
-  - 192.168.0.0/16
+  - 192.168.0.0/24
 
 domain: dark.side.com
 
+dns_group_name: dns_servers
+
+# Set true to require and configure a second dns_servers inventory host.
+dns_secondary_enabled: false
+
+# Reverse zone for the default 192.168.0.0/24 PXE network.
+dns_reverse_zone: 0.168.192.in-addr.arpa
+
+dns_reverse_network: 192.168.0
+
+# Increment the serial whenever zone records change.
+dns_zone_serial: 1
+
+dns_zone_refresh: 604800
+
+dns_zone_retry: 86400
+
+dns_zone_expire: 2419200
+
+dns_zone_negative_ttl: 604800
+
+# Upstream recursive resolvers.
+dns_forwarders:
+  - 8.8.8.8
+  - 8.8.4.4
+
+# Extra A/PTR records managed in the private zone.
+dns_zone_records:
+  - name: pxe
+    address: 192.168.0.24
+
+# BIND configuration and backup paths.
 optionsfile: /etc/bind/named.conf.options
 
 localfile: /etc/bind/named.conf.local
@@ -18,6 +55,9 @@ dns_backup_files:
   - /etc/default/named
   - /etc/bind/named.conf.options
   - /etc/bind/named.conf.local
+
+# Supported values: dual, ipv4, ipv6.
+dualstack: ipv4
 
 # dns_backup_dirs:
 #   - /opt/backups/dns

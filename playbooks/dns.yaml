@@ -1,0 +1,13 @@
+---
+# Standalone playbook for the primary and secondary internal DNS servers.
+- name: Configure primary and secondary DNS servers
+  hosts: dns_servers
+  become: true
+  gather_facts: true
+
+  # Supplies the domain, trusted subnet and reverse-zone settings.
+  vars_files:
+    - vars/pxe.yaml
+
+  roles:
+    - role: ../roles/dns

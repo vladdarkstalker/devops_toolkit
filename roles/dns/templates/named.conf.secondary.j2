@@ -1,0 +1,12 @@
+// Managed by Ansible: zones transferred from the configured primary server.
+zone "{{ domain }}" {
+    type secondary;
+    file "db.{{ domain }}";
+    primaries { {{ hostvars[dns_primary_host].ansible_host }}; };
+};
+
+zone "{{ dns_reverse_zone }}" {
+    type secondary;
+    file "db.{{ dns_reverse_network }}";
+    primaries { {{ hostvars[dns_primary_host].ansible_host }}; };
+};

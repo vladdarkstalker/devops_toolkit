@@ -1,0 +1,60 @@
+---
+# Authoritative zone configuration tasks executed only on the primary DNS node.
+
+# Create the directory containing primary zone databases.
+- name: Create directory for primary zone files
+  ansible.builtin.file:
+    path: /etc/bind/zones
+    state: directory
+    owner: root
+    group: bind
+    mode: u=rwx,g=rx,o=rx
+
+# Declare authoritative forward and reverse zones in named.conf.local.
+- name: Configure primary forward and reverse zones
+  ansible.builtin.template:
+    src: named.conf.primary.j2
+    dest: "{{ localfile }}"
+    owner: root
+    group: bind
+    mode: u=rw,g=r,o=r
+    validate: named-checkconf %s
+  notify: Restart bind9
+
+# Render SOA, NS and A records for name-to-address lookups.
+- name: Create primary forward zone file
+  ansible.builtin.template:
+    src: forward.zone.j2
+    dest: "/etc/bind/zones/db.{{ domain }}"
+    owner: root
+    group: bind
+    mode: u=rw,g=r,o=r
+  notify: Restart bind9
+
+# Verify the complete forward-zone database with named-checkzone.
+- name: Validate primary forward zone
+  ansible.builtin.command:
+    argv:
+      - named-checkzone
+      - "{{ domain }}"
+      - "/etc/bind/zones/db.{{ domain }}"
+  changed_when: false
+
+# Render SOA, NS and PTR records for address-to-name lookups.
+- name: Create primary reverse zone file
+  ansible.builtin.template:
+    src: reverse.zone.j2
+    dest: "/etc/bind/zones/db.{{ dns_reverse_network }}"
+    owner: root
+    group: bind
+    mode: u=rw,g=r,o=r
+  notify: Restart bind9
+
+# Verify the complete reverse-zone database with named-checkzone.
+- name: Validate primary reverse zone
+  ansible.builtin.command:
+    argv:
+      - named-checkzone
+      - "{{ dns_reverse_zone }}"
+      - "/etc/bind/zones/db.{{ dns_reverse_network }}"
+  changed_when: false

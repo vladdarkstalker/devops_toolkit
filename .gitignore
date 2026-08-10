@@ -1,2 +1,13 @@
+# Local credentials, generated boot assets and large installation images.
 playbooks/inventory.ini
 files/
+!roles/tftp/files/
+!roles/tftp/files/default
+*.iso
+
+# Local Astra Linux image, variables and documentation are intentionally
+# excluded from the public/project history.
+/roles/iso/files/astra/
+/playbooks/vars/astra.yaml
+/docs/astra/
+ROADMAP.md

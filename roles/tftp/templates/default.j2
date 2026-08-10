@@ -1,0 +1,29 @@
+# Managed by Ansible: shared BIOS/UEFI PXELINUX installation menu.
+default isolinux/menu.c32
+prompt 0
+timeout {{ pxe_boot_menu_timeout }}
+
+menu title --------- Enterprise Automation Boot Menu ---------
+
+label 1
+menu label ^1. Install CentOS 7.6 from local repo
+kernel centos/vmlinuz
+append initrd=centos/initrd inst.repo=http://{{ pxe_http_server }}/centos ip=dhcp inst.vnc inst.vncpassword=password
+
+label 2
+menu label ^2. Install Ubuntu Server 26.04 from local repo
+kernel ubuntu_server/vmlinuz
+append initrd=ubuntu_server/initrd ip=dhcp boot=casper url=http://{{ pxe_http_server }}/ubuntu_server/installer.iso
+
+label 3
+menu label ^3. Try or install Ubuntu Desktop 24.04.3 from local repo
+kernel ubuntu_desktop/vmlinuz
+append initrd=ubuntu_desktop/initrd ip=dhcp boot=casper url=http://{{ pxe_http_server }}/ubuntu_desktop/installer.iso
+
+{% for boot_entry in pxe_extra_boot_entries %}
+
+label {{ boot_entry.label }}
+menu label {{ boot_entry.menu_label }}
+kernel {{ boot_entry.kernel }}
+append initrd={{ boot_entry.initrd }} {{ boot_entry.append }}
+{% endfor %}

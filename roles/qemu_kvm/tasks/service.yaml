@@ -1,3 +1,7 @@
+---
+# Service-management tasks for the libvirt virtualization daemon.
+
+# Enable libvirtd at boot and ensure it is active now.
 - name: Setup libvirt service
   ansible.builtin.systemd:
     name: libvirtd

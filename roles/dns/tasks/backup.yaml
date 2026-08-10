@@ -1,10 +1,14 @@
+---
+# Backup tasks executed before managed BIND templates are installed.
+
+# Create a protected location for timestamped BIND configuration copies.
 - name: Is backup dir exist
   ansible.builtin.file:
     path: "{{ dns_backup_path }}"
     state: directory
     mode: u=rwx,g=rx,o=rx
 
-# If we need copy files
+# Detect existing configuration files because a fresh package may omit some.
 - name: Is backup files exist
   ansible.builtin.stat:
     path: "{{ item }}"
@@ -18,7 +22,7 @@
 #   loop: "{{ dns_backup_dirs }}"
 #   register: dns_backup_dirs_stat
 
-# If we need copy files
+# Copy each existing regular file to a unique timestamped backup file.
 - name: Copy files to backup dir
   ansible.builtin.copy:
     src: "{{ item.stat.path }}"

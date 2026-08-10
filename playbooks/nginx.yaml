@@ -1,0 +1,13 @@
+---
+# Standalone playbook for the HTTP repository used by PXE installers.
+- name: Configure PXE HTTP server
+  hosts: nginx_servers
+  become: true
+  gather_facts: true
+
+  # Keeps the content-server address consistent with DHCP and TFTP.
+  vars_files:
+    - vars/pxe.yaml
+
+  roles:
+    - role: ../roles/nginx

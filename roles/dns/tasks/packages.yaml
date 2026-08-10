@@ -1,5 +1,8 @@
+---
+# Package installation tasks for BIND and its administration utilities.
+
+# Install every package declared by dns_packages.
 - name: Installing bind
   ansible.builtin.package:
     name: "{{ dns_packages }}"
     state: present
-    

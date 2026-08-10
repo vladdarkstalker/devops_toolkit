@@ -1,0 +1,21 @@
+---
+# Configure the tftpd-hpa publication root and daemon startup parameters.
+
+# Create the secure TFTP root owned by the unprivileged daemon account.
+- name: Create TFTP root
+  ansible.builtin.file:
+    path: "{{ tftp_root }}"
+    state: directory
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_user }}"
+    mode: u=rwx,g=rx,o=rx
+
+# Render /etc/default/tftpd-hpa and notify the service when it changes.
+- name: Configure tftpd-hpa
+  ansible.builtin.template:
+    src: tftpd-hpa.j2
+    dest: /etc/default/tftpd-hpa
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: Restart tftp

@@ -1,0 +1,20 @@
+// Managed by Ansible: authoritative zones hosted by the primary DNS server.
+zone "{{ domain }}" {
+    type primary;
+    file "/etc/bind/zones/db.{{ domain }}";
+{% if dns_secondary_enabled %}
+    allow-transfer { {{ hostvars[dns_secondary_host].ansible_host }}; };
+{% else %}
+    allow-transfer { none; };
+{% endif %}
+};
+
+zone "{{ dns_reverse_zone }}" {
+    type primary;
+    file "/etc/bind/zones/db.{{ dns_reverse_network }}";
+{% if dns_secondary_enabled %}
+    allow-transfer { {{ hostvars[dns_secondary_host].ansible_host }}; };
+{% else %}
+    allow-transfer { none; };
+{% endif %}
+};

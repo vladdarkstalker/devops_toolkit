@@ -1,0 +1,23 @@
+---
+# NFS server export configuration.
+
+# Create the directory before publishing it through /etc/exports.
+- name: Create shared directory
+  ansible.builtin.file:
+    path: "{{ nfs_shared_folder }}"
+    state: directory
+    owner: "{{ nfs_user }}"
+    group: "{{ nfs_group }}"
+    mode: u=rwx,g=rwx,o=rwx
+
+# Keep one clearly delimited export managed by this role.
+- name: Configure NFS export
+  ansible.builtin.blockinfile:
+    path: /etc/exports
+    marker: "# {mark} ANSIBLE MANAGED NFS EXPORT"
+    block: |
+      {{ nfs_shared_folder }} {{ nfs_shared_address }}/{{ nfs_shared_subnet }}({{ [nfs_shared_access, nfs_sync, nfs_secure, nfs_root_squash, nfs_subtree_check] | join(',') }})
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: Reload NFS exports

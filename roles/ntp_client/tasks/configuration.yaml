@@ -1,0 +1,31 @@
+---
+# chronyd drops privileges while parsing configuration and cannot read files
+# from Ansible's private directory inside the SSH user's home. Keep the
+# candidate beside the active configuration instead.
+- name: Render candidate Chrony client configuration
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: "{{ ntp_client_config_path }}.ansible"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+
+- name: Validate candidate Chrony client configuration
+  ansible.builtin.command:
+    argv:
+      - /usr/sbin/chronyd
+      - -p
+      - -f
+      - "{{ ntp_client_config_path }}.ansible"
+  changed_when: false
+
+# Preserve the active configuration if validation fails.
+- name: Deploy validated Chrony client configuration
+  ansible.builtin.copy:
+    src: "{{ ntp_client_config_path }}.ansible"
+    dest: "{{ ntp_client_config_path }}"
+    remote_src: true
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: Restart Chrony client

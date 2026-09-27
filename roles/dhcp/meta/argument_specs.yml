@@ -1,0 +1,53 @@
+---
+argument_specs:
+  main:
+    short_description: Configure ISC DHCP Server
+    options:
+      dhcp_user:
+        type: str
+        required: true
+      dhcp_group:
+        type: str
+        required: true
+      dhcp_packages:
+        type: list
+        elements: str
+        required: true
+      dhcp_backup_path:
+        type: path
+        required: true
+      dhcp_backup_dirs:
+        type: list
+        elements: path
+        required: true
+      dhcp_subnet:
+        type: str
+        required: true
+      dhcp_netmask:
+        type: str
+        required: true
+      dhcp_range_start:
+        type: str
+        required: true
+      dhcp_range_end:
+        type: str
+        required: true
+      dhcp_broadcast_address:
+        type: str
+        required: true
+      dhcp_gateway:
+        type: str
+        required: true
+      dhcp_dns_servers:
+        type: list
+        elements: str
+        required: true
+      dhcp_interfacesv4:
+        type: list
+        elements: str
+        required: true
+      dhcp_interfacesv6:
+        type: list
+        elements: str
+        required: true
+

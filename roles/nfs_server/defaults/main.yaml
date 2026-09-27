@@ -1,0 +1,40 @@
+---
+# Defaults for an NFS server export.
+
+# Ownership of the exported directory.
+nfs_user: root
+nfs_group: root
+
+# Packages required by the NFS role.
+nfs_packages:
+  - nfs-kernel-server
+
+# Directory exported by the server.
+nfs_shared_folder: /home/nfs
+
+# Backup destination and source files.
+nfs_backup_path: /opt/backups/nfs
+
+nfs_backup_files:
+  - /etc/exports
+
+# Client network allowed to mount the export.
+nfs_shared_address: 192.168.0.0
+
+# CIDR prefix length of the allowed client network.
+nfs_shared_subnet: 24
+
+# Export access mode: rw or ro.
+nfs_shared_access: rw
+
+# Write behavior: sync or async.
+nfs_sync: sync
+
+# Client port policy: secure or insecure.
+nfs_secure: secure
+
+# Root mapping policy: root_squash or no_root_squash.
+nfs_root_squash: root_squash
+
+# Subtree validation policy: subtree_check or no_subtree_check.
+nfs_subtree_check: subtree_check

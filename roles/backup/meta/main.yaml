@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: backup
+  author: vladdarkstalker
+  description: Create timestamped copies of files and directories on remote hosts
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all

@@ -1,0 +1,29 @@
+---
+# NFS server role entry point: install, delegate backup, configure and start the service.
+
+# Refresh APT metadata once per hour on supported Debian-family hosts.
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+# Install nfs-kernel-server before accessing its generated configuration paths.
+- name: Install NFS server packages
+  ansible.builtin.import_tasks: packages.yaml
+
+# Preserve the existing exports file through the reusable backup role.
+- name: Back up NFS configuration
+  ansible.builtin.include_role:
+    name: backup
+  vars:
+    backup_destination_path: "{{ nfs_backup_path }}"
+    backup_source_files: "{{ nfs_backup_files }}"
+    backup_source_directories: []
+
+# Create the export directory and manage its /etc/exports entry.
+- name: Configure NFS
+  ansible.builtin.import_tasks: configuration.yaml
+
+# Enable NFS at boot and ensure the daemon is running now.
+- name: Configure NFS server service
+  ansible.builtin.import_tasks: service.yaml

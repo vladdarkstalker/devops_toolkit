@@ -1,0 +1,7 @@
+---
+# Destination directory for timestamped backup copies.
+backup_destination_path: /opt/backups
+
+# Existing files and directories from these lists are copied from the remote host.
+backup_source_files: []
+backup_source_directories: []

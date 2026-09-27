@@ -2,20 +2,28 @@
 # Nginx role entry point for the HTTP side of the PXE content server.
 
 # Refresh APT metadata once per hour on Debian-family systems.
-- name: Update repository index
+- name: Update APT cache
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
-  when: ansible_os_family == "Debian"
 
 # Install Nginx before creating its site configuration.
-- name: Installing packages
+- name: Install Nginx packages
   ansible.builtin.import_tasks: packages.yaml
 
-# Create and validate the virtual host that publishes installation content.
-- name: Configure PXE HTTP repository
+# Preserve an existing PXE virtual host through the reusable backup role.
+- name: Back up Nginx configuration
+  ansible.builtin.include_role:
+    name: backup
+  vars:
+    backup_destination_path: "{{ nginx_backup_path }}"
+    backup_source_files: "{{ nginx_backup_files }}"
+    backup_source_directories: []
+
+# Publish the document root through a dedicated validated virtual host.
+- name: Configure Nginx
   ansible.builtin.import_tasks: configuration.yaml
 
 # Enable Nginx at boot and ensure it is serving content now.
-- name: Configure service
+- name: Configure Nginx service
   ansible.builtin.import_tasks: service.yaml

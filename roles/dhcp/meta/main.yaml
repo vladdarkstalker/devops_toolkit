@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: dhcp
+  author: vladdarkstalker
+  description: Install and configure ISC DHCP Server on Debian-based systems
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+

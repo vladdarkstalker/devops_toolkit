@@ -2,7 +2,7 @@
 # Handlers for applying TFTP daemon configuration changes.
 
 # Restart tftpd-hpa only when its managed defaults file changes.
-- name: Restart tftp
-  ansible.builtin.systemd:
+- name: Restart TFTP server
+  ansible.builtin.systemd_service:
     name: tftpd-hpa
     state: restarted

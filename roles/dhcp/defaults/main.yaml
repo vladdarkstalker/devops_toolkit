@@ -1,38 +1,33 @@
 ---
-# Default variables for configuring isc-dhcp-server as a PXE DHCP provider.
-# Playbooks override topology values from playbooks/vars/pxe.yaml.
+# Defaults for ISC DHCP Server.
 
 # Ownership of the generated DHCP configuration.
 dhcp_user: root
-
 dhcp_group: root
 
 # Packages required by the DHCP role.
 dhcp_packages:
   - isc-dhcp-server
 
-# Default PXE client network: 192.168.0.0/24.
+# Backup destination and source directories.
+dhcp_backup_path: /opt/backups/dhcp
+
+dhcp_backup_dirs:
+  - /etc/dhcp
+
+# Default client network and dynamic address pool.
 dhcp_subnet: 192.168.0.0
 dhcp_netmask: 255.255.255.0
 dhcp_range_start: 192.168.0.100
 dhcp_range_end: 192.168.0.200
 dhcp_broadcast_address: 192.168.0.255
 dhcp_gateway: 192.168.0.1
+
+# DNS servers advertised to DHCP clients.
 dhcp_dns_servers:
-  - 192.168.0.2
-  - 192.168.0.3
+  - 8.8.8.8
+  - 1.1.1.1
 
-# PXE server returned to clients by the DHCP next-server directive.
-dhcp_tftp_server: 192.168.0.24
-
-# Empty means that isc-dhcp-server listens on all available IPv4 interfaces.
+# Empty lists leave interface selection unrestricted for that address family.
 dhcp_interfacesv4: []
-
-# Destination and source directories used for pre-change backups.
-dhcp_backup_path: /opt/backups/dhcp
-
-# dhcp_backup_files:
-#   - /etc/dhcp/dhcpd.conf
-
-dhcp_backup_dirs:
-  - /etc/dhcp
+dhcp_interfacesv6: []

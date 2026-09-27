@@ -1,0 +1,28 @@
+---
+argument_specs:
+  main:
+    short_description: Mount an NFS export
+    options:
+      nfs_user:
+        type: str
+        required: true
+      nfs_group:
+        type: str
+        required: true
+      nfs_packages:
+        type: list
+        elements: str
+        required: true
+      nfs_mountpoint:
+        type: path
+        required: true
+      nfs_server_shared_address:
+        type: str
+        required: true
+      nfs_server_shared_folder:
+        type: path
+        required: true
+      nfs_mount_options:
+        type: str
+        required: true
+

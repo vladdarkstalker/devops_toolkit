@@ -1,0 +1,7 @@
+---
+# Enable time synchronization for the current session and future boots.
+- name: Enable and start Chrony client
+  ansible.builtin.systemd_service:
+    name: "{{ ntp_client_service_name }}"
+    enabled: true
+    state: started

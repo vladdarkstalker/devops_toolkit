@@ -1,0 +1,24 @@
+---
+# Chrony client role entry point.
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install Chrony client
+  ansible.builtin.import_tasks: packages.yaml
+
+- name: Back up Chrony client configuration
+  ansible.builtin.include_role:
+    name: backup
+  vars:
+    backup_destination_path: "{{ ntp_client_backup_path }}"
+    backup_source_files: "{{ ntp_client_backup_files }}"
+    backup_source_directories: []
+
+- name: Configure Chrony client
+  ansible.builtin.import_tasks: configuration.yaml
+
+- name: Configure Chrony client service
+  ansible.builtin.import_tasks: service.yaml
+

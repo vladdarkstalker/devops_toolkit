@@ -1,0 +1,19 @@
+---
+argument_specs:
+  main:
+    short_description: Back up remote files and directories
+    options:
+      backup_destination_path:
+        type: path
+        required: true
+        description: Directory in which timestamped copies are created
+      backup_source_files:
+        type: list
+        elements: path
+        required: true
+        description: Remote files to copy when they exist
+      backup_source_directories:
+        type: list
+        elements: path
+        required: true
+        description: Remote directories to copy recursively when they exist

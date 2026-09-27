@@ -2,7 +2,7 @@
 # Package installation tasks for the DHCP role.
 
 # Install every package listed in dhcp_packages using the host package manager.
-- name: Installing packages
+- name: Install DHCP packages
   ansible.builtin.package:
     name: "{{ dhcp_packages }}"
     state: present

@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  role_name: tftp
+  author: vladdarkstalker
+  description: Configure a tftpd-hpa server on Debian-based systems
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+

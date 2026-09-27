@@ -1,0 +1,11 @@
+# Managed by Ansible: Chrony client configuration.
+{% for source in ntp_client_servers -%}
+server {{ source.address }} {{ source.options }}
+{% endfor -%}
+
+driftfile /var/lib/chrony/chrony.drift
+makestep 1.0 3
+rtcsync
+leapsectz right/UTC
+logdir /var/log/chrony
+log measurements statistics tracking

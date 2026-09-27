@@ -32,7 +32,7 @@
     owner: "{{ dhcp_user }}"
     group: "{{ dhcp_group }}"
     mode: u=rw,g=r,o=r
-  notify: Restart isc-dhcp-server
+  notify: Restart ISC DHCP Server
 
 # Select the IPv4 interfaces on which the systemd service should listen.
 - name: Configure DHCP server interfaces
@@ -42,4 +42,4 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
-  notify: Restart isc-dhcp-server
+  notify: Restart ISC DHCP Server

@@ -1,0 +1,8 @@
+---
+# Package installation for the NFS client role.
+
+# Install every package listed in nfs_packages using the host package manager.
+- name: Install NFS client packages
+  ansible.builtin.package:
+    name: "{{ nfs_packages }}"
+    state: present

@@ -1,0 +1,18 @@
+---
+# Chrony package, service and configuration path.
+ntp_client_packages:
+  - chrony
+ntp_client_service_name: chrony
+ntp_client_config_path: /etc/chrony/chrony.conf
+
+# Time sources used by this client.
+ntp_client_servers:
+  - address: 0.pool.ntp.org
+    options: "iburst"
+  - address: 192.168.1.1
+    options: "iburst prefer"
+
+# Backup destination and source files.
+ntp_client_backup_path: /opt/backups/ntp_client
+ntp_client_backup_files:
+  - /etc/chrony/chrony.conf

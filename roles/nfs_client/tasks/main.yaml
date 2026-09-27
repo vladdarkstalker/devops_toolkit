@@ -1,0 +1,16 @@
+---
+# NFS client role entry point: install the client and mount the export.
+
+# Refresh APT metadata once per hour on supported Debian-family hosts.
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+# Install the NFS client utilities.
+- name: Install NFS client packages
+  ansible.builtin.import_tasks: packages.yaml
+
+# Create and persist the client mount.
+- name: Configure NFS client
+  ansible.builtin.import_tasks: configuration.yaml

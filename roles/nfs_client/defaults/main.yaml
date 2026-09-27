@@ -1,0 +1,18 @@
+---
+# Defaults for an NFS client mount.
+
+# Ownership of the local mount point before the export is mounted.
+nfs_user: root
+nfs_group: root
+
+# Packages required by the NFS role.
+nfs_packages:
+  - nfs-common
+
+nfs_mountpoint: /home/nfs
+
+# Export path on the NFS server.
+nfs_server_shared_folder: /home/nfs
+
+# Mount options written to /etc/fstab.
+nfs_mount_options: rw,sync,hard

@@ -1,0 +1,45 @@
+---
+# Create the common destination before copying any configured source.
+- name: Create backup destination
+  ansible.builtin.file:
+    path: "{{ backup_destination_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
+# Missing sources are intentionally skipped so the role also works before a
+# package has created its initial configuration.
+- name: Inspect files to back up
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop: "{{ backup_source_files }}"
+  register: backup_files_stat
+
+- name: Copy existing files to backup destination
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ backup_destination_path }}/{{ ansible_date_time.iso8601_basic_short }}_{{ item.stat.path | basename }}"
+    mode: preserve
+    remote_src: true
+  loop: "{{ backup_files_stat.results }}"
+  when:
+    - item.stat.exists
+    - item.stat.isreg
+
+- name: Inspect directories to back up
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop: "{{ backup_source_directories }}"
+  register: backup_directories_stat
+
+- name: Copy existing directories to backup destination
+  ansible.builtin.copy:
+    src: "{{ item.stat.path }}"
+    dest: "{{ backup_destination_path }}/{{ ansible_date_time.iso8601_basic_short }}_{{ item.stat.path | basename }}"
+    mode: preserve
+    remote_src: true
+  loop: "{{ backup_directories_stat.results }}"
+  when:
+    - item.stat.exists
+    - item.stat.isdir

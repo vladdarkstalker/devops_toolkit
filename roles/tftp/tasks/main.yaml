@@ -1,33 +1,29 @@
 ---
-# TFTP role entry point: build firmware, configure publication and start service.
+# TFTP role entry point: install, back up, configure and start the service.
 
 # Refresh APT metadata once per hour on Debian-family systems.
-- name: Update repository index
+- name: Update APT cache
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
-  when: ansible_os_family == "Debian"
 
 # Install the TFTP daemon before writing its service defaults.
-- name: Installing packages
+- name: Install TFTP packages
   ansible.builtin.import_tasks: packages.yaml
 
-# Download and compile the Syslinux BIOS/UEFI firmware required by PXE clients.
-- name: Prepare Syslinux bootloaders
-  ansible.builtin.import_tasks: syslinux.yaml
+# Preserve the package-provided daemon defaults through the reusable role.
+- name: Back up TFTP configuration
+  ansible.builtin.include_role:
+    name: backup
+  vars:
+    backup_destination_path: "{{ tftp_backup_path }}"
+    backup_source_files: "{{ tftp_backup_files }}"
+    backup_source_directories: []
 
 # Configure tftpd-hpa to publish the role-managed TFTP root.
 - name: Configure TFTP daemon
   ansible.builtin.import_tasks: configuration.yaml
 
-# Copy compiled bootloaders and menu modules into the published tree.
-- name: Configure boot firmware
-  ansible.builtin.import_tasks: firmware.yaml
-
-# Install the same generated PXELINUX menu for BIOS and UEFI clients.
-- name: Configure default boot menu
-  ansible.builtin.import_tasks: default_boot.yaml
-
 # Enable tftpd-hpa at boot and ensure it is running now.
-- name: Configure service
+- name: Configure TFTP service
   ansible.builtin.import_tasks: service.yaml

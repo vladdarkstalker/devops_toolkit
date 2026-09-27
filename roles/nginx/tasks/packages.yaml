@@ -2,7 +2,7 @@
 # Package installation tasks for the PXE HTTP service.
 
 # Install every package listed in nginx_packages.
-- name: Installing nginx
+- name: Install Nginx packages
   ansible.builtin.package:
     name: "{{ nginx_packages }}"
     state: present

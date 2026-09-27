@@ -1,0 +1,20 @@
+---
+# NFS client mount configuration.
+
+# Create the local mount point before mounting the export.
+- name: Create NFS mount point
+  ansible.builtin.file:
+    path: "{{ nfs_mountpoint }}"
+    state: directory
+    owner: "{{ nfs_user }}"
+    group: "{{ nfs_group }}"
+    mode: u=rwx,g=rwx,o=rwx
+
+# Persist the mount in /etc/fstab and mount it immediately.
+- name: Mount NFS export
+  ansible.posix.mount:
+    path: "{{ nfs_mountpoint }}"
+    src: "{{ nfs_server_shared_address }}:{{ nfs_server_shared_folder }}"
+    fstype: nfs
+    opts: "{{ nfs_mount_options }}"
+    state: mounted

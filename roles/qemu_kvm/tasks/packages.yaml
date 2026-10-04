@@ -2,15 +2,15 @@
 # Package installation and hardware-validation tasks for QEMU/KVM.
 
 # Install the QEMU emulator, firmware and host utilities.
-- name: Installing QEMU KVM packages
+- name: Install QEMU KVM packages
   ansible.builtin.package:
     name: "{{ qemu_kvm_packages }}"
     state: present
 
 # Install libvirt daemons, clients and VM provisioning tools.
-- name: Installing libvirt packages
+- name: Install libvirt packages
   ansible.builtin.package:
-    name: "{{ libvirt_packages }}"
+    name: "{{ qemu_kvm_libvirt_packages }}"
     state: present
 
 # Install graphical QEMU components only when explicitly enabled.

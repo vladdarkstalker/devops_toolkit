@@ -1,0 +1,13 @@
+---
+- name: Validate TFTP platform and daemon settings
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - tftp_packages | length > 0
+      - tftp_root is match('^/')
+      - tftp_backup_path is match('^/')
+      - tftp_backup_files | select('match', '^/') | list | length == tftp_backup_files | length
+      - tftp_address is match('^.+:[0-9]+$')
+    fail_msg: >-
+      TFTP requires a Debian-family host, absolute paths and an address in
+      host:port format.

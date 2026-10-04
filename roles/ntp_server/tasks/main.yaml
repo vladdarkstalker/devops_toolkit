@@ -1,0 +1,27 @@
+---
+# Chrony server role entry point.
+- name: Validate Chrony server role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install Chrony server
+  ansible.builtin.import_tasks: packages.yaml
+
+- name: Back up Chrony server configuration
+  ansible.builtin.include_role:
+    name: backup
+  vars:
+    backup_destination_path: "{{ ntp_server_backup_path }}"
+    backup_source_files: "{{ ntp_server_backup_files }}"
+    backup_source_directories: []
+
+- name: Configure Chrony server
+  ansible.builtin.import_tasks: configuration.yaml
+
+- name: Configure Chrony server service
+  ansible.builtin.import_tasks: service.yaml
+

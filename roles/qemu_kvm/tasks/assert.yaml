@@ -1,0 +1,12 @@
+---
+- name: Validate QEMU KVM platform and package settings
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - qemu_kvm_packages | length > 0
+      - qemu_kvm_libvirt_packages | length > 0
+      - not qemu_kvm_install_gui or qemu_kvm_gui_packages | length > 0
+      - qemu_kvm_service_name | length > 0
+    fail_msg: >-
+      QEMU KVM requires a Debian-family host, base and libvirt packages, a
+      service name, and GUI packages when GUI installation is enabled.

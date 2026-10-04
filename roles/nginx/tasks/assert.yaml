@@ -1,0 +1,14 @@
+---
+- name: Validate Nginx platform and listener settings
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - nginx_packages | length > 0
+      - nginx_root is match('^/')
+      - nginx_backup_path is match('^/')
+      - nginx_backup_files | select('match', '^/') | list | length == nginx_backup_files | length
+      - nginx_listen_port >= 1
+      - nginx_listen_port <= 65535
+    fail_msg: >-
+      Nginx requires a Debian-family host, absolute paths and a listener port
+      between 1 and 65535.

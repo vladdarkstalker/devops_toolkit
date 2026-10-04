@@ -1,0 +1,14 @@
+---
+# Install the generated PXELINUX boot menu for all supported firmware modes.
+
+# Render identical menu entries into both BIOS and UEFI configuration trees.
+- name: Install default PXELINUX configuration
+  ansible.builtin.template:
+    src: default.j2
+    dest: "{{ tftp_root }}/{{ item }}/pxelinux.cfg/default"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+  loop:
+    - BIOS
+    - EFIx64

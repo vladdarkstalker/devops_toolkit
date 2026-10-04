@@ -1,5 +1,8 @@
 ---
-# Nginx role entry point for the HTTP side of the PXE content server.
+# Nginx role entry point for the HTTP content server.
+
+- name: Validate Nginx role inputs
+  ansible.builtin.import_tasks: assert.yaml
 
 # Refresh APT metadata once per hour on Debian-family systems.
 - name: Update APT cache

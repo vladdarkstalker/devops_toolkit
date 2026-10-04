@@ -1,0 +1,9 @@
+---
+- name: Configure NTP server
+  hosts: ntp_servers
+  become: true
+  gather_facts: true
+  vars_files:
+    - vars/ntp_server.yaml
+  roles:
+    - role: ../roles/ntp_server

@@ -1,0 +1,15 @@
+---
+- name: Validate NFS server platform and export settings
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - nfs_packages | length > 0
+      - nfs_shared_folder is match('^/')
+      - nfs_backup_path is match('^/')
+      - nfs_backup_files | select('match', '^/') | list | length == nfs_backup_files | length
+      - nfs_shared_subnet >= 0
+      - nfs_shared_subnet <= 32
+      - nfs_shared_address | length > 0
+    fail_msg: >-
+      NFS server settings require a Debian-family host, absolute paths and an
+      IPv4 prefix length between 0 and 32.

@@ -25,9 +25,10 @@
 | Переменная | Назначение |
 |---|---|
 | `qemu_kvm_packages` | QEMU, OVMF, bridge-utils, dnsmasq-base и cpu-checker |
-| `libvirt_packages` | Демон, CLI-клиенты и `virtinst` |
+| `qemu_kvm_libvirt_packages` | Демон, CLI-клиенты и `virtinst` |
 | `qemu_kvm_install_gui` | Устанавливать ли пакеты из `qemu_kvm_gui_packages`; по умолчанию `false` |
 | `qemu_kvm_gui_packages` | Графические компоненты; по умолчанию `qemu-system-gui` |
+| `qemu_kvm_service_name` | Имя службы libvirt; по умолчанию `libvirtd` |
 
 Для серверной установки обычно оставляют `qemu_kvm_install_gui: false`.
 

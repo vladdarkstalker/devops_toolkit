@@ -1,0 +1,44 @@
+---
+# PXE role entry point: prepare providers, publish images and enable DHCP last.
+
+- name: Validate PXE role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
+# Refresh APT metadata once per hour on Debian-family systems.
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+# Install bootloader packages before publishing their files over TFTP.
+- name: Install PXE packages
+  ansible.builtin.import_tasks: packages.yaml
+
+# Configure TFTP and publish BIOS/UEFI bootloaders.
+- name: Configure PXE TFTP content
+  ansible.builtin.import_tasks: tftp.yaml
+
+# Configure the HTTP content server used by installers.
+- name: Configure PXE HTTP content
+  ansible.builtin.import_role:
+    name: nginx
+
+# Download installation images and extract their boot files.
+- name: Publish PXE installation images
+  ansible.builtin.import_tasks: image.yaml
+
+# Install the same menu for BIOS and UEFI clients.
+- name: Configure PXE boot menus
+  ansible.builtin.template:
+    src: default.j2
+    dest: "{{ tftp_root }}/{{ item }}/pxelinux.cfg/default"
+    owner: "{{ pxe_user }}"
+    group: "{{ pxe_group }}"
+    mode: u=rw,g=r,o=r
+  loop:
+    - bios
+    - uefi
+
+# Enable DHCP last so clients do not receive an incomplete PXE environment.
+- name: Configure PXE DHCP service
+  ansible.builtin.import_tasks: dhcp.yaml

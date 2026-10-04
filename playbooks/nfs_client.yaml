@@ -1,0 +1,13 @@
+---
+# Standalone playbook for the NFS client.
+- name: Configure NFS client
+  hosts: nfs_clients
+  become: true
+  gather_facts: true
+
+  # Shared topology can be edited once for both standalone and full PXE runs.
+  vars_files:
+    - vars/nfs_client.yaml
+
+  roles:
+    - role: ../roles/nfs_client

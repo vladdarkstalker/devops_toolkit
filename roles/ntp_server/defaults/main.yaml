@@ -1,0 +1,23 @@
+---
+# Chrony package, service and configuration path.
+ntp_server_packages:
+  - chrony
+ntp_server_service_name: chrony
+ntp_server_config_path: /etc/chrony/chrony.conf
+
+# Upstream time sources. Address and Chrony options are stored separately.
+ntp_server_upstreams:
+  - address: 0.pool.ntp.org
+    options: "iburst"
+  - address: 1.pool.ntp.org
+    options: "iburst"
+  - address: 2.pool.ntp.org
+    options: "iburst prefer"
+
+# Networks allowed to query this server, for example 192.168.0.0/24.
+ntp_server_allowed_networks: []
+
+# Backup destination and source files.
+ntp_server_backup_path: /opt/backups/ntp_server
+ntp_server_backup_files:
+  - /etc/chrony/chrony.conf

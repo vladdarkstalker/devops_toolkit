@@ -1,0 +1,13 @@
+---
+- name: Validate NFS client platform and mount settings
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - nfs_packages | length > 0
+      - nfs_mountpoint is match('^/')
+      - nfs_server_shared_folder is match('^/')
+      - nfs_server_shared_address | length > 0
+      - nfs_mount_options | length > 0
+    fail_msg: >-
+      NFS client settings require a Debian-family host, absolute local and
+      remote paths, a server address and mount options.

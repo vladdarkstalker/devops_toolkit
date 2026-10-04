@@ -3,6 +3,12 @@ argument_specs:
   main:
     short_description: Configure a TFTP server
     options:
+      tftp_user:
+        type: str
+        required: true
+      tftp_group:
+        type: str
+        required: true
       tftp_packages:
         type: list
         elements: str
@@ -14,9 +20,6 @@ argument_specs:
         type: str
         required: true
       tftp_options:
-        type: str
-        required: true
-      tftp_user:
         type: str
         required: true
       tftp_backup_path:

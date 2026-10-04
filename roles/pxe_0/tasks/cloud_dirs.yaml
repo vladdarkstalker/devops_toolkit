@@ -1,0 +1,40 @@
+---
+# Publish PXE-specific installation metadata over the HTTP publication root.
+
+- name: Create PXE cloud-data directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+  loop:
+    - "{{ nginx_pxe_root }}/cloud-data/ubuntu_server"
+    - "{{ nginx_pxe_root }}/cloud-data/ubuntu_desktop"
+    - "{{ nginx_pxe_root }}/debian"
+
+- name: Publish Ubuntu Server autoinstall data over HTTP
+  ansible.builtin.template:
+    src: "{{ role_path }}/files/ubuntu_server/"
+    dest: "{{ nginx_pxe_root }}/cloud-data/ubuntu_server/"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+    directory_mode: u=rwx,g=rx,o=rx
+
+- name: Publish Ubuntu Desktop autoinstall data over HTTP
+  ansible.builtin.template:
+    src: "{{ role_path }}/files/ubuntu_desktop/"
+    dest: "{{ nginx_pxe_root }}/cloud-data/ubuntu_desktop/"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+    directory_mode: u=rwx,g=rx,o=rx
+
+- name: Publish Debian preseed over HTTP
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/debian/preseed.cfg"
+    dest: "{{ nginx_pxe_root }}/debian/preseed.cfg"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r

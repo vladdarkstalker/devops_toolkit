@@ -1,0 +1,5 @@
+---
+# Publish PXE-specific installation metadata over the HTTP publication root.
+
+- name: Configure PXE cloud-data space
+  ansible.builtin.import_tasks: cloud_dirs.yaml

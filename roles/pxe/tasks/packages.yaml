@@ -1,0 +1,8 @@
+---
+# Package installation tasks for the PXE role.
+
+# Install every package that provides a required bootloader file.
+- name: Install PXE packages
+  ansible.builtin.package:
+    name: "{{ pxe_packages }}"
+    state: present

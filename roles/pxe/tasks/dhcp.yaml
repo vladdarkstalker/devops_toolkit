@@ -1,0 +1,33 @@
+---
+# Install and configure the base DHCP service first.
+- name: Configure DHCP service
+  ansible.builtin.import_role:
+    name: dhcp
+
+# Render under /etc/dhcp so dhcpd can read the candidate after dropping privileges.
+- name: Render candidate PXE DHCP configuration
+  ansible.builtin.template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf.ansible
+    owner: "{{ dhcp_user }}"
+    group: "{{ dhcp_group }}"
+    mode: u=rw,g=r,o=r
+
+- name: Validate candidate PXE DHCP configuration
+  ansible.builtin.command:
+    argv:
+      - dhcpd
+      - -t
+      - -cf
+      - /etc/dhcp/dhcpd.conf.ansible
+  changed_when: false
+
+- name: Deploy validated PXE DHCP configuration
+  ansible.builtin.copy:
+    src: /etc/dhcp/dhcpd.conf.ansible
+    dest: /etc/dhcp/dhcpd.conf
+    remote_src: true
+    owner: "{{ dhcp_user }}"
+    group: "{{ dhcp_group }}"
+    mode: u=rw,g=r,o=r
+  notify: Restart ISC DHCP Server

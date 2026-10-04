@@ -1,0 +1,9 @@
+---
+# Service-management tasks for tftpd-hpa.
+
+# Enable the daemon for future boots and start it for the current deployment.
+- name: Ensure TFTP is enabled and running
+  ansible.builtin.systemd_service:
+    name: tftpd-hpa
+    enabled: true
+    state: started

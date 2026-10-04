@@ -1,6 +1,9 @@
 ---
 # TFTP role entry point: install, back up, configure and start the service.
 
+- name: Validate TFTP role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
 # Refresh APT metadata once per hour on Debian-family systems.
 - name: Update APT cache
   ansible.builtin.apt:

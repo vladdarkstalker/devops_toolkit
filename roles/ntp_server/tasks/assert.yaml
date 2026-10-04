@@ -1,0 +1,14 @@
+---
+- name: Validate Chrony server platform and time sources
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - ntp_server_packages | length > 0
+      - ntp_server_config_path is match('^/')
+      - ntp_server_backup_path is match('^/')
+      - ntp_server_backup_files | select('match', '^/') | list | length == ntp_server_backup_files | length
+      - ntp_server_upstreams | length > 0
+      - ntp_server_upstreams | map(attribute='address') | select('equalto', '') | list | length == 0
+    fail_msg: >-
+      Chrony server requires a Debian-family host, absolute paths and at least
+      one upstream with a non-empty address.

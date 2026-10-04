@@ -1,0 +1,53 @@
+---
+argument_specs:
+  main:
+    short_description: Install Nexus Repository Manager
+    options:
+      nexus_version:
+        type: str
+        required: true
+      nexus_archive_architecture_map:
+        type: dict
+        required: true
+      nexus_archive_architecture:
+        type: str
+        required: true
+      nexus_download_url:
+        type: str
+        required: true
+      nexus_download_checksum:
+        type: str
+        required: true
+      nexus_download_path:
+        type: path
+        required: true
+      nexus_user:
+        type: str
+        required: true
+      nexus_group:
+        type: str
+        required: true
+      nexus_install_root:
+        type: path
+        required: true
+      nexus_install_directory:
+        type: path
+        required: true
+      nexus_install_link:
+        type: path
+        required: true
+      nexus_service_name:
+        type: str
+        required: true
+      nexus_packages:
+        type: list
+        elements: str
+        required: true
+      nexus_backup_path:
+        type: path
+        required: true
+      nexus_backup_directories:
+        type: list
+        elements: path
+        required: true
+

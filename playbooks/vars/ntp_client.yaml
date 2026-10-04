@@ -1,0 +1,5 @@
+---
+# Internal Chrony server used by managed clients.
+ntp_client_servers:
+  - address: "{{ hostvars['ntp01']['ansible_host'] }}"
+    options: iburst

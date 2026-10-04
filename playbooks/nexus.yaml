@@ -1,0 +1,10 @@
+---
+# Standalone playbook for Nexus Repository Manager.
+- name: Configure Nexus Repository Manager
+  hosts: nexus_servers
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: ../roles/nexus
+

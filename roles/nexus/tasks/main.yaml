@@ -1,0 +1,27 @@
+---
+# Nexus role entry point: install, back up, configure and start the service.
+- name: Validate Nexus role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
+- name: Update APT cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install Nexus Repository Manager
+  ansible.builtin.import_tasks: packages.yaml
+
+- name: Back up Nexus configuration
+  ansible.builtin.include_role:
+    name: backup
+  vars:
+    backup_destination_path: "{{ nexus_backup_path }}"
+    backup_source_files: []
+    backup_source_directories: "{{ nexus_backup_directories }}"
+
+- name: Configure Nexus Repository Manager
+  ansible.builtin.import_tasks: configuration.yaml
+
+- name: Configure Nexus service
+  ansible.builtin.import_tasks: service.yaml
+

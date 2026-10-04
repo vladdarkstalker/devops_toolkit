@@ -1,0 +1,23 @@
+---
+argument_specs:
+  main:
+    short_description: Configure a QEMU KVM virtualization host
+    options:
+      qemu_kvm_packages:
+        type: list
+        elements: str
+        required: true
+      qemu_kvm_install_gui:
+        type: bool
+        required: true
+      qemu_kvm_gui_packages:
+        type: list
+        elements: str
+        required: true
+      qemu_kvm_libvirt_packages:
+        type: list
+        elements: str
+        required: true
+      qemu_kvm_service_name:
+        type: str
+        required: true

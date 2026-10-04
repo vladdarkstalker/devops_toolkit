@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: qemu_kvm
+  author: vladdarkstalker
+  description: Configure a QEMU KVM virtualization host on Debian-based systems
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all

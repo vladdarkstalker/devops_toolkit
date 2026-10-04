@@ -15,7 +15,9 @@ qemu_kvm_install_gui: false
 qemu_kvm_gui_packages:
   - qemu-system-gui
 
-libvirt_packages:
+qemu_kvm_libvirt_packages:
   - libvirt-daemon-system
   - libvirt-clients
   - virtinst
+
+qemu_kvm_service_name: libvirtd

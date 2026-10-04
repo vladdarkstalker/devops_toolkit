@@ -15,7 +15,7 @@
   ansible.builtin.template:
     src: tftpd-hpa.j2
     dest: /etc/default/tftpd-hpa
-    owner: root
-    group: root
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_user }}"
     mode: u=rw,g=r,o=r
   notify: Restart TFTP server

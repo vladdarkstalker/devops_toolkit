@@ -2,8 +2,8 @@
 # Service-management tasks for the libvirt virtualization daemon.
 
 # Enable libvirtd at boot and ensure it is active now.
-- name: Setup libvirt service
-  ansible.builtin.systemd:
-    name: libvirtd
+- name: Enable and start libvirt
+  ansible.builtin.systemd_service:
+    name: "{{ qemu_kvm_service_name }}"
     enabled: true
     state: started

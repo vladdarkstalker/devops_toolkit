@@ -1,0 +1,8 @@
+---
+- name: Validate backup paths
+  ansible.builtin.assert:
+    that:
+      - backup_destination_path is match('^/')
+      - backup_source_files | select('match', '^/') | list | length == backup_source_files | length
+      - backup_source_directories | select('match', '^/') | list | length == backup_source_directories | length
+    fail_msg: Backup destination and source paths must be absolute.

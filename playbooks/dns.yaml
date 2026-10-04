@@ -7,7 +7,7 @@
 
   # Supplies the domain, trusted subnet and reverse-zone settings.
   vars_files:
-    - vars/pxe.yaml
+    - vars/dns.yaml
 
   roles:
     - role: ../roles/dns

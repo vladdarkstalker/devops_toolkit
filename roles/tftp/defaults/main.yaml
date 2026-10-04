@@ -1,6 +1,10 @@
 ---
 # Defaults for the standalone TFTP service.
 
+# Ownership of the TFTP configurations.
+tftp_user: root
+tftp_group: root
+
 # Runtime dependencies.
 tftp_packages:
   - tftpd-hpa
@@ -9,7 +13,6 @@ tftp_packages:
 tftp_root: /var/lib/tftpboot
 tftp_address: 0.0.0.0:69
 tftp_options: --secure
-tftp_user: tftp
 
 # Existing daemon configuration is backed up before replacement.
 tftp_backup_path: /opt/backups/tftp

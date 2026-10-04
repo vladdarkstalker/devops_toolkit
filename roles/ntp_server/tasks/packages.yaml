@@ -1,0 +1,6 @@
+---
+# Install the selected Chrony package set.
+- name: Install Chrony server packages
+  ansible.builtin.package:
+    name: "{{ ntp_server_packages }}"
+    state: present

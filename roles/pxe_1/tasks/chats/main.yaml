@@ -1,0 +1,11 @@
+# Download and compile the Syslinux BIOS/UEFI firmware required by PXE clients.
+- name: Prepare Syslinux bootloaders
+  ansible.builtin.import_tasks: syslinux.yaml
+
+# Copy compiled bootloaders and menu modules into the published tree.
+- name: Configure boot firmware
+  ansible.builtin.import_tasks: firmware.yaml
+
+# Install the same generated PXELINUX menu for BIOS and UEFI clients.
+- name: Configure default boot menu
+  ansible.builtin.import_tasks: default_boot.yaml

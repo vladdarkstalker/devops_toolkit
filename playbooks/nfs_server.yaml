@@ -1,0 +1,13 @@
+---
+# Standalone playbook for the NFS server.
+- name: Configure NFS server
+  hosts: nfs_servers
+  become: true
+  gather_facts: true
+
+  # Shared topology can be edited once for both standalone and full PXE runs.
+  vars_files:
+    - vars/nfs_server.yaml
+
+  roles:
+    - role: ../roles/nfs_server

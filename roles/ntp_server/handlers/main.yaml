@@ -1,0 +1,6 @@
+---
+# Restart Chrony only after a validated configuration has been deployed.
+- name: Restart Chrony server
+  ansible.builtin.systemd_service:
+    name: "{{ ntp_server_service_name }}"
+    state: restarted

@@ -1,0 +1,27 @@
+---
+- name: Validate Nexus platform and architecture
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - ansible_architecture in nexus_archive_architecture_map
+      - nexus_archive_architecture | length > 0
+      - nexus_packages | length > 0
+    fail_msg: >-
+      Nexus requires a Debian-family host and an architecture listed in
+      nexus_archive_architecture_map. Detected architecture: {{ ansible_architecture }}.
+
+- name: Validate Nexus download and filesystem settings
+  ansible.builtin.assert:
+    that:
+      - nexus_download_url is match('^https://')
+      - nexus_download_checksum is match('^sha256:.+')
+      - nexus_download_path is match('^/')
+      - nexus_install_root is match('^/')
+      - nexus_install_directory is match('^/')
+      - nexus_install_link is match('^/')
+      - nexus_install_directory != nexus_install_link
+      - nexus_backup_path is match('^/')
+      - nexus_backup_directories | select('match', '^/') | list | length == nexus_backup_directories | length
+    fail_msg: >-
+      Nexus requires HTTPS with a SHA-256 checksum, absolute paths and
+      different versioned installation and stable-link paths.

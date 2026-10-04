@@ -1,0 +1,26 @@
+---
+# Ownership of files published by the PXE role.
+pxe_user: root
+pxe_group: root
+
+# Packages that provide BIOS and UEFI Syslinux bootloaders.
+pxe_packages:
+  - syslinux
+  - pxelinux
+  - syslinux-common
+  - syslinux-efi
+
+# Addresses advertised to PXE clients.
+pxe_tftp_server: "{{ ansible_default_ipv4.address }}"
+pxe_http_server: "{{ ansible_default_ipv4.address }}"
+pxe_boot_menu_timeout: 120
+
+# Bootloader locations installed by Debian/Ubuntu packages.
+pxe_bios_loader_source: /usr/lib/PXELINUX/pxelinux.0
+pxe_bios_modules_source: /usr/lib/syslinux/modules/bios/
+pxe_uefi_loader_source: /usr/lib/SYSLINUX.EFI/efi64/syslinux.efi
+pxe_uefi_modules_source: /usr/lib/syslinux/modules/efi64/
+
+# Site-specific installation images are defined by the invoking playbook.
+pxe_boot_entries: []
+

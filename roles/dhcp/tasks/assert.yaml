@@ -1,0 +1,13 @@
+---
+- name: Validate DHCP platform and network settings
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - dhcp_packages | length > 0
+      - dhcp_backup_path is match('^/')
+      - dhcp_backup_dirs | select('match', '^/') | list | length == dhcp_backup_dirs | length
+      - dhcp_dns_servers | length > 0
+      - dhcp_range_start != dhcp_range_end
+    fail_msg: >-
+      DHCP requires a Debian-family host, packages, absolute backup paths,
+      at least one DNS server and a non-empty address range.

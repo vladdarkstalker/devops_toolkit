@@ -5,9 +5,5 @@
   become: true
   gather_facts: true
 
-  # Supplies the HTTP server address embedded into the boot menu.
-  vars_files:
-    - vars/pxe.yaml
-
   roles:
     - role: ../roles/tftp

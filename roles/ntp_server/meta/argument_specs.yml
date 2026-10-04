@@ -1,0 +1,38 @@
+---
+argument_specs:
+  main:
+    short_description: Configure a Chrony NTP server
+    options:
+      ntp_server_packages:
+        type: list
+        elements: str
+        required: true
+      ntp_server_service_name:
+        type: str
+        required: true
+      ntp_server_config_path:
+        type: path
+        required: true
+      ntp_server_upstreams:
+        type: list
+        elements: dict
+        required: true
+        options:
+          address:
+            type: str
+            required: true
+          options:
+            type: str
+            required: true
+      ntp_server_allowed_networks:
+        type: list
+        elements: str
+        required: true
+      ntp_server_backup_path:
+        type: path
+        required: true
+      ntp_server_backup_files:
+        type: list
+        elements: path
+        required: true
+

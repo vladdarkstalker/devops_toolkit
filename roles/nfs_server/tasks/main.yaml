@@ -1,6 +1,9 @@
 ---
 # NFS server role entry point: install, delegate backup, configure and start the service.
 
+- name: Validate NFS server role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
 # Refresh APT metadata once per hour on supported Debian-family hosts.
 - name: Update APT cache
   ansible.builtin.apt:

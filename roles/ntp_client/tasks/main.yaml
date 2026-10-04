@@ -1,5 +1,8 @@
 ---
 # Chrony client role entry point.
+- name: Validate Chrony client role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
 - name: Update APT cache
   ansible.builtin.apt:
     update_cache: true

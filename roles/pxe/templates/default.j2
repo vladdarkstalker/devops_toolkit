@@ -1,0 +1,13 @@
+# Managed by Ansible: shared BIOS/UEFI PXELINUX installation menu.
+default menu.c32
+prompt 0
+timeout {{ pxe_boot_menu_timeout }}
+
+menu title --------- Enterprise Automation Boot Menu ---------
+
+{% for boot_entry in pxe_boot_entries %}
+label {{ boot_entry.label }}
+menu label {{ boot_entry.menu_label }}
+kernel images/{{ boot_entry.distribution }}/vmlinuz
+append initrd=images/{{ boot_entry.distribution }}/initrd {{ boot_entry.append }}
+{% endfor %}

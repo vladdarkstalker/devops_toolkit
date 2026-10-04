@@ -1,4 +1,8 @@
 ---
+# Reject invalid paths before the role creates or copies anything.
+- name: Validate backup role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
 # Create the common destination before copying any configured source.
 - name: Create backup destination
   ansible.builtin.file:

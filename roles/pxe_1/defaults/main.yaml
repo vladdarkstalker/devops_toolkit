@@ -1,0 +1,65 @@
+---
+# Default variables for the standalone TFTP and Syslinux boot service.
+
+# Runtime and Syslinux build dependencies.
+tftp_packages:
+  - tftpd-hpa
+
+tftp_syslinux_build_packages:
+  - build-essential
+  - nasm
+  - uuid-dev
+  - gcc-multilib
+  - g++-multilib
+
+# TFTP daemon and PXE menu settings.
+tftp_root: /var/lib/tftpboot
+tftp_address: 0.0.0.0:69
+tftp_options: --secure
+tftp_user: tftp
+pxe_http_server: 192.168.0.24
+pxe_boot_menu_timeout: 120
+
+# Optional site-specific menu entries. Keep private distribution metadata in a
+# locally ignored vars file and pass it with --extra-vars.
+pxe_extra_boot_entries: []
+
+# Syslinux source release and local build locations.
+tftp_syslinux_version: 6.04-pre2
+tftp_syslinux_archive: "syslinux-{{ tftp_syslinux_version }}.tar.gz"
+tftp_syslinux_url: >-
+  https://www.zytor.com/pub/syslinux/Testing/6.04/{{ tftp_syslinux_archive }}
+tftp_syslinux_download_dir: /tmp
+tftp_syslinux_install_root: /opt/syslinux
+syslinux_build_dir: >-
+  {{ tftp_syslinux_install_root }}/syslinux-{{ tftp_syslinux_version }}
+
+# Directory tree published by the TFTP daemon.
+tftp_subdirs:
+  - BIOS
+  - BIOS/pxelinux.cfg
+  - BIOS/isolinux
+  - EFIx64
+  - EFIx64/pxelinux.cfg
+  - EFIx64/isolinux
+
+# Required BIOS bootloader files copied from the compiled Syslinux tree.
+bios_specific_files:
+  - bios/com32/libutil/libutil.c32
+  - bios/com32/elflink/ldlinux/ldlinux.c32
+  - bios/core/pxelinux.0
+
+# Required UEFI x64 bootloader files copied from the compiled Syslinux tree.
+uefi_specific_files:
+  - efi64/com32/elflink/ldlinux/ldlinux.e64
+  - efi64/com32/lib/libcom32.c32
+  - efi64/com32/libutil/libutil.c32
+  - efi64/efi/syslinux.efi
+
+# HTTP document root and virtual-host listener settings.
+nginx_pxe_root: /var/www/html
+nginx_pxe_server_name: _
+nginx_pxe_listen_port: 80
+
+# PXE server returned to clients by the DHCP next-server directive.
+dhcp_tftp_server: 192.168.0.24

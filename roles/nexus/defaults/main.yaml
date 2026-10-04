@@ -1,0 +1,30 @@
+---
+# Nexus release and architecture-specific official archive.
+nexus_version: 3.96.4-01
+nexus_archive_architecture_map:
+  x86_64: x86_64
+  aarch64: aarch_64
+nexus_archive_architecture: "{{ nexus_archive_architecture_map.get(ansible_architecture, '') }}"
+nexus_download_url: >-
+  https://download.sonatype.com/nexus/3/nexus-{{ nexus_version }}-linux-{{ nexus_archive_architecture }}.tar.gz
+nexus_download_checksum: "sha256:{{ nexus_download_url }}.sha256"
+nexus_download_path: "/tmp/nexus-{{ nexus_version }}-linux-{{ nexus_archive_architecture }}.tar.gz"
+
+# Runtime account and installation paths.
+nexus_user: nexus
+nexus_group: nexus
+nexus_install_root: /opt/sonatype
+nexus_install_directory: "{{ nexus_install_root }}/nexus-{{ nexus_version }}"
+nexus_install_link: "{{ nexus_install_root }}/nexus"
+nexus_service_name: nexus
+
+# Runtime packages required by the official distribution archive.
+nexus_packages:
+  - ca-certificates
+  - tar
+
+# Existing application configuration is backed up before replacement.
+nexus_backup_path: /opt/backups/nexus
+nexus_backup_directories:
+  - "{{ nexus_install_link }}/etc"
+

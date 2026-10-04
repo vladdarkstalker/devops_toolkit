@@ -1,0 +1,3 @@
+---
+# Select the server shared address 
+nfs_server_shared_address: "{{ hostvars['nfs01']['ansible_host'] }}"

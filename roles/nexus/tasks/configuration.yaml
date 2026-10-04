@@ -1,0 +1,20 @@
+---
+# Run Nexus under its dedicated unprivileged account.
+- name: Configure Nexus runtime user
+  ansible.builtin.copy:
+    content: |
+      run_as_user="{{ nexus_user }}"
+    dest: "{{ nexus_install_link }}/bin/nexus.rc"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    mode: u=rw,g=r,o=r
+  notify: Restart Nexus
+
+- name: Install Nexus systemd unit
+  ansible.builtin.template:
+    src: nexus.service.j2
+    dest: "/etc/systemd/system/{{ nexus_service_name }}.service"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: Restart Nexus

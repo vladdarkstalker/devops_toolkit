@@ -1,0 +1,9 @@
+---
+- name: Configure NTP clients
+  hosts: ntp_clients
+  become: true
+  gather_facts: true
+  vars_files:
+    - vars/ntp_client.yaml
+  roles:
+    - role: ../roles/ntp_client

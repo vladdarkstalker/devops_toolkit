@@ -1,23 +1,12 @@
 ---
-# Full PXE orchestration playbook. Providers are prepared before DHCP starts
-# advertising the environment to network clients.
+# Configure all PXE providers on the same host and enable DHCP last.
+- name: Configure PXE server
+  hosts: pxe_servers
+  become: true
+  gather_facts: true
 
-# DNS is configured first so all subsequent services can be registered.
-- name: Configure DNS servers
-  ansible.builtin.import_playbook: dns.yaml
+  vars_files:
+    - vars/pxe.yaml
 
-# HTTP must exist before installation images are published.
-- name: Configure PXE HTTP server
-  ansible.builtin.import_playbook: nginx.yaml
-
-# TFTP prepares the initial BIOS and UEFI network bootloaders.
-- name: Configure PXE TFTP server
-  ansible.builtin.import_playbook: tftp.yaml
-
-# ISO publication copies kernels, initrds and installation repositories.
-- name: Publish PXE installation images
-  ansible.builtin.import_playbook: iso.yaml
-
-# DHCP is enabled last so clients never receive an incomplete PXE environment.
-- name: Configure PXE DHCP server
-  ansible.builtin.import_playbook: dhcp.yaml
+  roles:
+    - role: ../roles/pxe

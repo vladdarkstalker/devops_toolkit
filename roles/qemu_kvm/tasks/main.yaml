@@ -1,17 +1,18 @@
 ---
 # QEMU/KVM role entry point.
 
+- name: Validate QEMU KVM role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
 # Refresh package metadata before installing virtualization components.
-- name: Update repository index
+- name: Update APT cache
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
-  when: ansible_os_family == "Debian"
-
 # Install the QEMU, libvirt and optional GUI packages.
-- name: Installing packages
+- name: Install QEMU KVM packages
   ansible.builtin.import_tasks: packages.yaml
 
 # Enable and start the libvirt management daemon.
-- name: Setup libvirt service
+- name: Configure libvirt service
   ansible.builtin.import_tasks: service.yaml

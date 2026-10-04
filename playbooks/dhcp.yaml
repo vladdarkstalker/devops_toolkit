@@ -7,7 +7,7 @@
 
   # Shared topology can be edited once for both standalone and full PXE runs.
   vars_files:
-    - vars/pxe.yaml
+    - vars/dhcp.yaml
 
   roles:
     - role: ../roles/dhcp

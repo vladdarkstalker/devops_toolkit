@@ -1,0 +1,69 @@
+---
+argument_specs:
+  main:
+    short_description: Configure a BIOS and UEFI PXE server
+    options:
+      pxe_user:
+        type: str
+        required: true
+      pxe_group:
+        type: str
+        required: true
+      pxe_packages:
+        type: list
+        elements: str
+        required: true
+      pxe_tftp_server:
+        type: str
+        required: true
+      pxe_http_server:
+        type: str
+        required: true
+      pxe_boot_menu_timeout:
+        type: int
+        required: true
+      pxe_bios_loader_source:
+        type: path
+        required: true
+      pxe_bios_modules_source:
+        type: path
+        required: true
+      pxe_uefi_loader_source:
+        type: path
+        required: true
+      pxe_uefi_modules_source:
+        type: path
+        required: true
+      pxe_boot_entries:
+        type: list
+        elements: dict
+        required: true
+        options:
+          name:
+            type: str
+            required: true
+          distribution:
+            type: str
+            required: true
+          version:
+            type: str
+            required: true
+          label:
+            type: str
+            required: true
+          menu_label:
+            type: str
+            required: true
+          iso_source:
+            type: path
+            required: true
+          kernel_source:
+            type: path
+            required: true
+          initrd_source:
+            type: path
+            required: true
+          append:
+            type: str
+            required: true
+

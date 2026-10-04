@@ -1,0 +1,41 @@
+---
+# Nginx document-root and virtual-host configuration tasks.
+
+# Ensure the HTTP publication root exists before ISO content is copied into it.
+- name: Create PXE HTTP root
+  ansible.builtin.file:
+    path: "{{ nginx_pxe_root }}"
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
+# Render the PXE virtual host into sites-available.
+- name: Install PXE Nginx virtual host
+  ansible.builtin.template:
+    src: pxe.conf.j2
+    dest: /etc/nginx/sites-available/pxe
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: Restart nginx
+
+# Create the sites-enabled symlink used by Debian's Nginx configuration.
+- name: Enable PXE Nginx virtual host
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/pxe
+    dest: /etc/nginx/sites-enabled/pxe
+    state: link
+  notify: Restart nginx
+
+# Remove the competing default_server listener shipped by the package.
+- name: Disable the default Nginx virtual host
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart nginx
+
+# Test the complete configuration before a notified restart is allowed to run.
+- name: Validate Nginx configuration
+  ansible.builtin.command: nginx -t
+  changed_when: false

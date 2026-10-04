@@ -1,6 +1,9 @@
 ---
 # NFS client role entry point: install the client and mount the export.
 
+- name: Validate NFS client role inputs
+  ansible.builtin.import_tasks: assert.yaml
+
 # Refresh APT metadata once per hour on supported Debian-family hosts.
 - name: Update APT cache
   ansible.builtin.apt:

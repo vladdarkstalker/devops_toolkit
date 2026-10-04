@@ -1,0 +1,89 @@
+---
+- name: Create HTTP image directories
+  ansible.builtin.file:
+    path: "{{ nginx_root }}/{{ item.distribution }}"
+    state: directory
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    mode: u=rwx,g=rx,o=rx
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.distribution }}"
+
+- name: Create TFTP image directories
+  ansible.builtin.file:
+    path: "{{ tftp_root }}/images/{{ item.distribution }}"
+    state: directory
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rwx,g=rx,o=rx
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.distribution }}"
+
+- name: Create ISO mount points
+  ansible.builtin.file:
+    path: "/mnt/pxe_{{ item.distribution }}"
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.distribution }}"
+
+- name: Publish installation images over HTTP
+  ansible.builtin.copy:
+    src: "{{ item.iso_source }}"
+    dest: "{{ nginx_root }}/{{ item.distribution }}/installer.iso"
+    owner: "{{ nginx_user }}"
+    group: "{{ nginx_group }}"
+    mode: u=rw,g=r,o=r
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+# Ephemeral mounts avoid persistent /etc/fstab entries.
+- name: Mount installation images temporarily
+  ansible.posix.mount:
+    path: "/mnt/pxe_{{ item.distribution }}"
+    src: "{{ nginx_root }}/{{ item.distribution }}/installer.iso"
+    fstype: iso9660
+    opts: loop,ro
+    state: ephemeral
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Publish PXE kernels
+  ansible.builtin.copy:
+    src: "/mnt/pxe_{{ item.distribution }}/{{ item.kernel_source }}"
+    dest: "{{ tftp_root }}/images/{{ item.distribution }}/vmlinuz"
+    remote_src: true
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rw,g=r,o=r
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Publish PXE initrds
+  ansible.builtin.copy:
+    src: "/mnt/pxe_{{ item.distribution }}/{{ item.initrd_source }}"
+    dest: "{{ tftp_root }}/images/{{ item.distribution }}/initrd"
+    remote_src: true
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rw,g=r,o=r
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Unmount installation images
+  ansible.posix.mount:
+    path: "/mnt/pxe_{{ item.distribution }}"
+    state: unmounted
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.name }}"
+

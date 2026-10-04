@@ -4,6 +4,7 @@ files/
 !roles/tftp/files/
 !roles/tftp/files/default
 *.iso
+.cache/
 
 # Local Astra Linux image, variables and documentation are intentionally
 # excluded from the public/project history.

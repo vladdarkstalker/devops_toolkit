@@ -1,0 +1,56 @@
+---
+# Install and configure the TFTP daemon before publishing bootloader files.
+- name: Configure TFTP service
+  ansible.builtin.import_role:
+    name: tftp
+
+- name: Create PXE TFTP directories
+  ansible.builtin.file:
+    path: "{{ tftp_root }}/{{ item }}"
+    state: directory
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rwx,g=rx,o=rx
+  loop:
+    - bios
+    - bios/pxelinux.cfg
+    - uefi
+    - uefi/pxelinux.cfg
+    - images
+
+- name: Publish BIOS Syslinux modules
+  ansible.builtin.copy:
+    src: "{{ pxe_bios_modules_source }}"
+    dest: "{{ tftp_root }}/bios/"
+    remote_src: true
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rwX,g=rX,o=rX
+
+- name: Publish BIOS PXELINUX loader
+  ansible.builtin.copy:
+    src: "{{ pxe_bios_loader_source }}"
+    dest: "{{ tftp_root }}/bios/pxelinux.0"
+    remote_src: true
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rw,g=r,o=r
+
+- name: Publish UEFI Syslinux modules
+  ansible.builtin.copy:
+    src: "{{ pxe_uefi_modules_source }}"
+    dest: "{{ tftp_root }}/uefi/"
+    remote_src: true
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rwX,g=rX,o=rX
+
+- name: Publish UEFI Syslinux loader
+  ansible.builtin.copy:
+    src: "{{ pxe_uefi_loader_source }}"
+    dest: "{{ tftp_root }}/uefi/syslinux.efi"
+    remote_src: true
+    owner: "{{ tftp_user }}"
+    group: "{{ tftp_group }}"
+    mode: u=rw,g=r,o=r
+

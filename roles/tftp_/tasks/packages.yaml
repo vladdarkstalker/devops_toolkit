@@ -1,0 +1,8 @@
+---
+# Package installation tasks for the TFTP daemon.
+
+# Install every runtime package listed in tftp_packages.
+- name: Installing tftp
+  ansible.builtin.package:
+    name: "{{ tftp_packages }}"
+    state: present

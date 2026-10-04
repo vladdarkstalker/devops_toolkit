@@ -1,0 +1,34 @@
+---
+- name: Validate PXE platform and common settings
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == 'Debian'
+      - pxe_packages | length > 0
+      - pxe_tftp_server | length > 0
+      - pxe_http_server | length > 0
+      - pxe_boot_menu_timeout >= 0
+      - pxe_bios_loader_source is match('^/')
+      - pxe_bios_modules_source is match('^/')
+      - pxe_uefi_loader_source is match('^/')
+      - pxe_uefi_modules_source is match('^/')
+      - pxe_boot_entries | length > 0
+      - pxe_boot_entries | map(attribute='distribution') | unique | list | length == pxe_boot_entries | length
+      - pxe_boot_entries | map(attribute='label') | unique | list | length == pxe_boot_entries | length
+    fail_msg: >-
+      PXE requires a Debian-family host, server addresses, absolute remote
+      bootloader paths and boot entries with unique distributions and labels.
+
+- name: Validate PXE boot entries
+  ansible.builtin.assert:
+    that:
+      - item.name | length > 0
+      - item.distribution is match('^[a-z0-9_]+$')
+      - item.label is match('^[A-Za-z0-9_.-]+$')
+      - item.iso_source | length > 0
+      - item.kernel_source | length > 0
+      - item.initrd_source | length > 0
+      - item.append | length > 0
+    fail_msg: "Invalid PXE boot entry: {{ item.name | default('unnamed') }}"
+  loop: "{{ pxe_boot_entries }}"
+  loop_control:
+    label: "{{ item.name | default('unnamed') }}"
